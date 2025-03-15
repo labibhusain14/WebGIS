@@ -240,8 +240,9 @@ function Maps() {
           style={{
             width: "90%",
             marginTop: "20px",
+            marginLeft: "10px",
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "left",
             flexWrap: "wrap",
             gap: "15px",
           }}
@@ -249,6 +250,13 @@ function Maps() {
           {[
             {
               name: "Kos Harmoni",
+              location: "Sukasari",
+              price: "Rp1,8 juta /bulan",
+              image:
+                "https://www.tokocatlancar.com/upload/img_Mon-240226092040.webp",
+            },
+            {
+              name: "Kos Jaya",
               location: "Sukasari",
               price: "Rp1,8 juta /bulan",
               image:
