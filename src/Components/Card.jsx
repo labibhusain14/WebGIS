@@ -1,9 +1,9 @@
-const Card = () => {
-    return (
-        <div className="card">
-            <h1>Card</h1>
-        </div>
-    )
+function Card({ children, className }) {
+  return <div className={`card ${className}`}>{children}</div>;
 }
 
-export default Card;
+function CardContent({ children }) {
+  return <div className="card-content">{children}</div>;
+}
+
+export { Card, CardContent };

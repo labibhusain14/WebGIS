@@ -6,6 +6,7 @@ import Points from "./Pages/Points";
 import Line from "./Pages/Line";
 import Polygon from "./Pages/Polygon";
 import Coba from "./Pages/Coba";
+import DetailPage from "./Pages/Detail";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/line" element={<Line />} />
       <Route path="/polygon" element={<Polygon />} />
       <Route path="/coba" element={<Coba />} />
+      <Route path="/detail" element={<DetailPage />} />
     </Routes>
   );
 }
