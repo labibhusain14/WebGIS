@@ -234,6 +234,85 @@ function Maps() {
             </button>
           ))}
         </div>
+        {/* Card Button Section */}
+        {/* Card Button Section */}
+        <div
+          style={{
+            width: "90%",
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: "15px",
+          }}
+        >
+          {[
+            {
+              name: "Kos Harmoni",
+              location: "Sukasari",
+              price: "Rp1,8 juta /bulan",
+              image:
+                "https://www.tokocatlancar.com/upload/img_Mon-240226092040.webp",
+            },
+            {
+              name: "Kos Ade",
+              location: "Sukajadi",
+              price: "Rp2,8 juta /bulan",
+              image:
+                "https://www.tokocatlancar.com/upload/img_Mon-240226092040.webp",
+            },
+          ].map((kos, index) => (
+            <div
+              key={index}
+              style={{
+                backgroundColor: "white",
+                borderRadius: "20px",
+                boxShadow: "0px 2px 5px rgba(0,0,0,0.1)",
+                cursor: "pointer",
+                width: "45%",
+                textAlign: "left",
+                overflow: "hidden", // Agar border radius terlihat rapi
+              }}
+            >
+              <img
+                src={kos.image}
+                alt={kos.name}
+                style={{
+                  borderRadius: "10px 10px 0 0", // Hanya atas supaya menyatu dengan card
+                  width: "100%",
+                  height: "120px",
+                  objectFit: "cover",
+                  padding: "none",
+                }}
+              />
+              <div style={{ padding: "10px" }}>
+                {" "}
+                {/* Tambahkan padding hanya pada teks */}
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                    marginTop: "5px",
+                  }}
+                >
+                  {kos.name}
+                </div>
+                <div style={{ fontSize: "12px", color: "#7F8C8D" }}>
+                  {kos.location}
+                </div>
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "12px",
+                    marginTop: "5px",
+                  }}
+                >
+                  {kos.price}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <button
