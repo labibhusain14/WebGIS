@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px; /* Lebar scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Warna background track */
+  border-radius: 10px; /* Membuat sudut rounded */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #a0aec0; /* Warna thumb (pegangan scrollbar) */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #718096; /* Warna saat hover */
+}
+
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

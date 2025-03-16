@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Map from "./Pages/Maps";
-import Navigator from "./pages/Navigator";
+import Navigator from "./Pages/Navigator";
 import Marker from "./Pages/Marker";
 import Points from "./Pages/Points";
 import Line from "./Pages/Line";
