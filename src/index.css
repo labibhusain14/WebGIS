@@ -5,6 +5,7 @@
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 5px; /* Lebar scrollbar */
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {

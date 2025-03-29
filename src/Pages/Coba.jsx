@@ -11,6 +11,14 @@ import {
   Menu,
   ChevronDown,
   Search,
+  Bot,
+  X,
+  BedDouble,
+  History,
+  Wallet,
+  MessageCircle,
+  Send,
+  Mic,
 } from "lucide-react";
 
 function Maps() {
@@ -29,7 +37,23 @@ function Maps() {
 
   const facilitiesOptions = ["Lemari", "Kasur", "Parkir", "Kamar Mandi Dalam"];
   const typeOptions = ["Laki-laki", "Perempuan", "Campur"];
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeAssistant, setActiveAssistant] = useState("assistant");
 
+  const [messages, setMessages] = useState([
+    { text: "Halo, apakah ada yang bisa saya bantu?", sender: "bot" },
+    {
+      text: "Hai, aku lagi cari kos di dekat Universitas Pendidikan Indonesia. Ada rekomendasi?",
+      sender: "user",
+    },
+    {
+      text: "Baik! Preferensi fasilitas? (AC, Wi-Fi, kamar mandi dalam)",
+      sender: "bot",
+    },
+    { text: "Wi-Fi cepat, kamar mandi dalam.", sender: "user" },
+  ]);
+  const [input, setInput] = useState("");
+  const chatEndRef = useRef(null);
   const tabs = [
     "Beranda",
     "Market Intelligence",
@@ -43,7 +67,7 @@ function Maps() {
       location: "Sukasari",
       price: "Rp1,8 juta",
       image: "src/assets/image-1.jpg",
-      facilities: [Wifi, ShowerHead, Bike], // Tambahkan fasilitas
+      facilities: [Wifi, ShowerHead, Bike, BedDouble], // Tambahkan fasilitas
     },
     {
       name: "Kos Jaya",
@@ -160,6 +184,26 @@ function Maps() {
       );
     }
   };
+
+  const sendMessage = () => {
+    if (input.trim() !== "") {
+      const userMessage = { text: input, sender: "user" };
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      setInput("");
+
+      setTimeout(() => {
+        const botReply = {
+          text: "Saya sedang memproses permintaan Anda...",
+          sender: "bot",
+        };
+        setMessages((prevMessages) => [...prevMessages, botReply]);
+      }, 1000);
+    }
+  };
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const toggleLike = (index) => {
     setLikedItems((prev) => {
@@ -407,6 +451,146 @@ function Maps() {
       >
         <Crosshair className="w-4 h-4 text-gray-700" />
       </button>
+
+      <div className="fixed bottom-6 right-6 flex flex-col items-end z-10">
+        {isOpen && (
+          <div className="w-[450px] h-[500px] bg-[#ECF0F1] shadow-lg rounded-lg flex flex-col fixed bottom-10 right-14 z-50 border border-gray-300">
+            {/* Header */}
+            <div className="flex justify-between items-center bg-[#2C3E50] text-white p-2 rounded-t-lg">
+              <div className="flex space-x-2">
+                <button className="p-2 rounded-full hover:bg-gray-700">
+                  <History size={18} />
+                </button>
+              </div>
+              <div className="flex space-x-4 bg-gray-100 p-1 rounded-full mx-auto">
+                <button
+                  onClick={() => setActiveAssistant("budgeting")}
+                  className={`px-4 py-2 text-xs font-bold rounded-full ${
+                    activeAssistant === "budgeting"
+                      ? "bg-[#2C3E50] text-white shadow-md"
+                      : "text-gray-500"
+                  }`}
+                >
+                  <Wallet size={16} className="inline-block mr-1" /> Smart
+                  Budgeting
+                </button>
+                <button
+                  onClick={() => setActiveAssistant("assistant")}
+                  className={`px-4 py-2 text-xs font-bold rounded-full ${
+                    activeAssistant === "assistant"
+                      ? "bg-[#2C3E50] text-white shadow-md"
+                      : "text-gray-500"
+                  }`}
+                >
+                  <MessageCircle size={16} className="inline-block mr-1" />{" "}
+                  Virtual Assistant
+                </button>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-1 rounded-full hover:bg-gray-700"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 p-4 overflow-auto text-sm text-gray-700 flex flex-col space-y-2">
+              {activeAssistant === "assistant" ? (
+                <div className="flex flex-col">
+                  {messages.map((msg, index) => (
+                    <div
+                      key={index}
+                      className={`mb-3 p-3 rounded-lg max-w-sm ${
+                        msg.sender === "bot"
+                          ? "bg-gray-200 self-start"
+                          : "bg-[#2C3E50] text-white self-end"
+                      }`}
+                    >
+                      <p>{msg.text}</p>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+              ) : (
+                <div>
+                  <div className=" bg-white shadow-md rounded-xl flex items-center w-[70%]">
+                    <div className="shadow-md py-12 px-1 bg-green-400 rounded-l-md"></div>
+                    <div className="ml-3 mb-2">
+                      <p className="text-[#999696] text-sm font-bold mb-4">
+                        Estimated Budget
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        Rp1,5 - 1,8 juta{" "}
+                        <span className="text-gray-500 text-2xl font-normal">
+                          /bulan
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <h4 className="my-4 font-semibold">Recommendation</h4>
+                  <div className="flex overflow-x-auto space-x-4">
+                    {kosList.map((kos, index) => (
+                      <div
+                        key={index}
+                        className="min-w-[160px] bg-white shadow-md rounded-lg p-2"
+                      >
+                        <img
+                          src={kos.image}
+                          alt={kos.name}
+                          className="h-20 w-full object-cover rounded-md"
+                        />
+                        <p className="mt-2 text-sm font-semibold">{kos.name}</p>
+                        <p className="text-sm text-gray-500">
+                          {kos.price}/bulan
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <textarea
+                    className="w-full mt-4 border rounded-md p-4 text-sm focus:outline-none"
+                    placeholder="Describe your budget criteria..."
+                  ></textarea>
+                </div>
+              )}
+            </div>
+
+            {/* Input Field */}
+            {activeAssistant === "assistant" && (
+              <div className="flex items-center p-3 border-t bg-gray-800 rounded-b-lg">
+                <input
+                  type="text"
+                  className="flex-1 p-2 border rounded-full text-sm focus:outline-none bg-gray-700 text-white placeholder-gray-400"
+                  placeholder="Ask anything..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                />
+                <button className="ml-2 p-2 bg-white text-gray-800 rounded-full hover:bg-gray-300">
+                  <Mic size={18} />
+                </button>
+                <button
+                  onClick={sendMessage}
+                  className="ml-2 p-2 bg-white text-gray-800 rounded-full hover:bg-gray-300"
+                >
+                  <Send size={18} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="fixed top-24 right-2 z-50">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center space-x-2 bg-[#2C3E50] text-white px-3 py-3 rounded-full shadow-md hover:bg-[#1F2A36]"
+        >
+          <Bot size={18} />
+        </button>
+      </div>
 
       {/* Container Peta */}
       <div ref={mapContainer} className="flex-1 h-screen" />
