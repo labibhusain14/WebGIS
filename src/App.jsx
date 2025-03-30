@@ -7,7 +7,10 @@ import Line from "./Pages/Line";
 import Polygon from "./Pages/Polygon";
 import Coba from "./Pages/Coba";
 import DetailPage from "./Pages/Detail";
+import LoginPage from "./Pages/Login";
 import MarketIntelligenceDashboard from "./Pages/Dashboard";
+import HelpCenterPage from "./Pages/HelpCenter";
+import AboutUsPage from "./Pages/AboutUs";
 
 function App() {
   return (
@@ -20,7 +23,10 @@ function App() {
       <Route path="/polygon" element={<Polygon />} />
       <Route path="/coba" element={<Coba />} />
       <Route path="/detail" element={<DetailPage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/dashboard" element={<MarketIntelligenceDashboard />} />
+      <Route path="/pusat-bantuan" element={<HelpCenterPage />} />
+      <Route path="/about" element={<AboutUsPage />} />
     </Routes>
   );
 }

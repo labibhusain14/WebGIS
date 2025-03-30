@@ -6,10 +6,10 @@ const Navbar = () => {
   const location = useLocation();
 
   const tabRoutes = {
-    "Beranda": "/",
+    "Beranda": "/coba",
     "Market Intelligence": "/dashboard",
     "Pusat Bantuan": "/pusat-bantuan",
-    "Syarat & Ketentuan": "/syarat-ketentuan",
+    "About Us": "/about",
   };
 
   const [activeTab, setActiveTab] = useState("Beranda");
