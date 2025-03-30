@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -26,6 +27,12 @@ function Maps() {
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedType, setSelectedType] = useState([]);
+
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/detail`);
+  };
 
   const facilitiesOptions = ["Lemari", "Kasur", "Parkir", "Kamar Mandi Dalam"];
   const typeOptions = ["Laki-laki", "Perempuan", "Campur"];
@@ -184,11 +191,10 @@ function Maps() {
             <button
               key={name}
               onClick={() => setActiveTab(name)}
-              className={`text-base font-bold pb-1 border-b-2 ${
-                activeTab === name
+              className={`text-base font-bold pb-1 border-b-2 ${activeTab === name
                   ? "text-blue-500 border-blue-500"
                   : "text-black border-transparent"
-              }`}
+                }`}
             >
               {name}
             </button>
@@ -206,9 +212,8 @@ function Maps() {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-[64px] h-[calc(100vh-61px)] w-[350px] bg-gray-200 shadow-md transition-all duration-700 ${
-          isSidebarOpen ? "left-0" : "-translate-x-full"
-        } flex flex-col items-center z-40 border-t border-gray-300 overflow-y-auto`}
+        className={`fixed top-[64px] h-[calc(100vh-61px)] w-[350px] bg-gray-200 shadow-md transition-all duration-700 ${isSidebarOpen ? "left-0" : "-translate-x-full"
+          } flex flex-col items-center z-40 border-t border-gray-300 overflow-y-auto`}
       >
         <div className="flex items-center bg-white ml-2 m-5 rounded-lg p-2 shadow-md w-72">
           <input
@@ -229,16 +234,14 @@ function Maps() {
                 >
                   {label}
                   <ChevronDown
-                    className={`w-4 h-4 ml-2 transition-transform ${
-                      openDropdown === label ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`w-4 h-4 ml-2 transition-transform ${openDropdown === label ? "rotate-180" : "rotate-0"
+                      }`}
                   />
                 </button>
                 {openDropdown === label && (
                   <div
-                    className={`absolute left-0 mt-2 ${
-                      label === "Price" ? "w-80" : "w-40"
-                    } bg-white shadow-lg rounded-lg p-3 text-sm z-10`}
+                    className={`absolute left-0 mt-2 ${label === "Price" ? "w-80" : "w-40"
+                      } bg-white shadow-lg rounded-lg p-3 text-sm z-10`}
                   >
                     {label === "Price" && (
                       <div className="space-y-2">
@@ -352,6 +355,7 @@ function Maps() {
           {kosList.map((kos, index) => (
             <div
               key={index}
+              onClick={() => handleCardClick(index)}
               className="bg-white rounded-2xl shadow-md cursor-pointer w-[45%] overflow-hidden"
             >
               <img
@@ -364,11 +368,10 @@ function Maps() {
                   <div className="font-semibold text-sm">{kos.name}</div>
                   <button onClick={() => toggleLike(index)}>
                     <Heart
-                      className={`w-4 h-4 mt-1 transition-all ${
-                        likedItems[index]
+                      className={`w-4 h-4 mt-1 transition-all ${likedItems[index]
                           ? "text-red-500 fill-red-500"
                           : "text-gray-400"
-                      }`}
+                        }`}
                     />
                   </button>
                 </div>
@@ -393,9 +396,8 @@ function Maps() {
 
       <button
         onClick={toggleSidebar}
-        className={`fixed top-[75px] transition-all duration-700 ${
-          isSidebarOpen ? "left-[350px]" : "left-0"
-        } bg-gray-800 text-white p-2 rounded-r-md z-10`}
+        className={`fixed top-[75px] transition-all duration-700 ${isSidebarOpen ? "left-[350px]" : "left-0"
+          } bg-gray-800 text-white p-2 rounded-r-md z-10`}
       >
         <Menu className="w-5 h-5" />
       </button>

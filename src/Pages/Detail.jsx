@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, Eye, MessageCircle } from "lucide-react";
+import { Heart, Eye, MessageCircle, Lightbulb } from "lucide-react";
 import Image1 from "../assets/image-1.jpg";
 import Preview1 from "../assets/preview-1.jpg";
 import Preview2 from "../assets/preview-2.jpg";
@@ -151,6 +151,7 @@ const DetailPage = () => {
               </div>
               <div className="flex items-center">
                 <div className="flex items-center mr-4">
+                  <Lightbulb size={18} className="mr-2 text-gray-500" />
                   <span className="text-sm">Termasuk Listrik</span>
                 </div>
                 <div className="bg-gray-200 px-2 py-1 rounded-full text-xs">

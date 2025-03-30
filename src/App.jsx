@@ -7,6 +7,7 @@ import Line from "./Pages/Line";
 import Polygon from "./Pages/Polygon";
 import Coba from "./Pages/Coba";
 import DetailPage from "./Pages/Detail";
+import MarketIntelligenceDashboard from "./Pages/Dashboard";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/polygon" element={<Polygon />} />
       <Route path="/coba" element={<Coba />} />
       <Route path="/detail" element={<DetailPage />} />
+      <Route path="/dashboard" element={<MarketIntelligenceDashboard />} />
     </Routes>
   );
 }
