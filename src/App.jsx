@@ -11,6 +11,7 @@ import LoginPage from "./Pages/Login";
 import MarketIntelligenceDashboard from "./Pages/Dashboard";
 import HelpCenterPage from "./Pages/HelpCenter";
 import AboutUsPage from "./Pages/AboutUs";
+import RegisterPage from "./Pages/Register";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Route path="/coba" element={<Coba />} />
       <Route path="/detail" element={<DetailPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/dashboard" element={<MarketIntelligenceDashboard />} />
       <Route path="/pusat-bantuan" element={<HelpCenterPage />} />
       <Route path="/about" element={<AboutUsPage />} />

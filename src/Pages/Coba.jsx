@@ -28,7 +28,7 @@ function Maps() {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const markerRef = useRef(null);
-  const [activeTab, setActiveTab] = useState("Beranda");
+  // const [activeTab, setActiveTab] = useState("Beranda");
   const [userLocation, setUserLocation] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const filters = ["Price", "Facilities", "Type"];
@@ -62,12 +62,6 @@ function Maps() {
   ]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef(null);
-  const tabs = [
-    "Beranda",
-    "Market Intelligence",
-    "Pusat Bantuan",
-    "Syarat & Ketentuan",
-  ];
 
   const kosList = [
     {
@@ -222,12 +216,13 @@ function Maps() {
   };
   return (
     <div className="relative h-screen">
-      < Navbar />
+      <Navbar />
 
       {/* Sidebar */}
       <div
-        className={`fixed top-[64px] h-[calc(100vh-61px)] w-[350px] bg-gray-200 shadow-md transition-all duration-700 ${isSidebarOpen ? "left-0" : "-translate-x-full"
-          } flex flex-col items-center z-40 border-t border-gray-300 overflow-y-auto`}
+        className={`fixed top-[64px] h-[calc(100vh-61px)] w-[350px] bg-gray-200 shadow-md transition-all duration-700 ${
+          isSidebarOpen ? "left-0" : "-translate-x-full"
+        } flex flex-col items-center z-40 border-t border-gray-300 overflow-y-auto`}
       >
         <div className="flex items-center bg-white ml-2 m-5 rounded-lg p-2 shadow-md w-72">
           <input
@@ -248,14 +243,16 @@ function Maps() {
                 >
                   {label}
                   <ChevronDown
-                    className={`w-4 h-4 ml-2 transition-transform ${openDropdown === label ? "rotate-180" : "rotate-0"
-                      }`}
+                    className={`w-4 h-4 ml-2 transition-transform ${
+                      openDropdown === label ? "rotate-180" : "rotate-0"
+                    }`}
                   />
                 </button>
                 {openDropdown === label && (
                   <div
-                    className={`absolute left-0 mt-2 ${label === "Price" ? "w-80" : "w-40"
-                      } bg-white shadow-lg rounded-lg p-3 text-sm z-10`}
+                    className={`absolute left-0 mt-2 ${
+                      label === "Price" ? "w-80" : "w-40"
+                    } bg-white shadow-lg rounded-lg p-3 text-sm z-10`}
                   >
                     {label === "Price" && (
                       <div className="space-y-2">
@@ -382,10 +379,11 @@ function Maps() {
                   <div className="font-semibold text-sm">{kos.name}</div>
                   <button onClick={() => toggleLike(index)}>
                     <Heart
-                      className={`w-4 h-4 mt-1 transition-all ${likedItems[index]
+                      className={`w-4 h-4 mt-1 transition-all ${
+                        likedItems[index]
                           ? "text-red-500 fill-red-500"
                           : "text-gray-400"
-                        }`}
+                      }`}
                     />
                   </button>
                 </div>
@@ -410,8 +408,9 @@ function Maps() {
 
       <button
         onClick={toggleSidebar}
-        className={`fixed top-[75px] transition-all duration-700 ${isSidebarOpen ? "left-[350px]" : "left-0"
-          } bg-gray-800 text-white p-2 rounded-r-md z-10`}
+        className={`fixed top-[75px] transition-all duration-700 ${
+          isSidebarOpen ? "left-[350px]" : "left-0"
+        } bg-gray-800 text-white p-2 rounded-r-md z-10`}
       >
         <Menu className="w-5 h-5" />
       </button>
