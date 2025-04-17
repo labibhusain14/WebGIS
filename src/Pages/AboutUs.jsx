@@ -6,7 +6,7 @@ import {
   Map,
   Compass,
   Code,
-  ChevronRight,
+  // ChevronRight,
   MapPin,
   Mail,
   Phone,
@@ -66,11 +66,11 @@ const AboutUsPage = () => {
               KostHub Solutions
             </h1>
             <p className="text-xl md:text-2xl mb-8">
-              Memetakan masa depan dengan solusi geospasial inovatif
+              Temukan kos ideal dengan teknologi pemetaan cerdas dan AI
             </p>
             <div className="flex items-center space-x-2 text-blue-300">
               <Globe className="w-5 h-5" />
-              <span>Memadukan teknologi GIS dengan kehidupan sehari-hari</span>
+              <span>Solusi pencarian kos berbasis lokasi dengan smart budgeting</span>
             </div>
           </div>
         </div>
@@ -82,27 +82,28 @@ const AboutUsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
           <div>
             <h2 className="text-3xl font-bold mb-6 text-blue-900">
-              Tentang Kami
+              About Us
             </h2>
             <p className="text-gray-700 mb-4">
               KostHub didirikan pada tahun 2025 dengan visi untuk merevolusi
-              cara organisasi memanfaatkan data geospasial. Kami merupakan
-              perusahaan teknologi spesialis dalam pengembangan Sistem Informasi
-              Geografis berbasis web (WebGIS) yang memadukan pemetaan digital,
-              analisis spasial, dan visualisasi data yang intuitif.
+              cara pencarian dan pengelolaan tempat kos di Indonesia. Kami
+              merupakan platform teknologi inovatif yang mengintegrasikan Sistem
+              Informasi Geografis berbasis web (WebGIS) dengan kecerdasan buatan
+              untuk memberikan pengalaman pencarian kos yang komprehensif dan
+              personal.
             </p>
             <p className="text-gray-700 mb-4">
-              Tim kami terdiri dari ahli GIS, pengembang perangkat lunak, dan
-              analis data yang berdedikasi untuk menciptakan solusi pemetaan
-              yang tidak hanya akurat tetapi juga mudah digunakan dan dapat
-              disesuaikan dengan kebutuhan spesifik setiap klien.
+              Tim kami terdiri dari ahli GIS, pengembang perangkat lunak, pakar
+              AI, dan analis data yang berdedikasi untuk menciptakan solusi
+              pencarian kos yang tidak hanya akurat secara lokasi tetapi juga
+              memahami kebutuhan dan anggaran spesifik setiap pengguna melalui
+              teknologi smart budgeting dan chatbot asisten kos.
             </p>
             <p className="text-gray-700">
-              Dengan teknologi terdepan dan pendekatan yang berfokus pada
-              pengguna, kami membantu organisasi dari berbagai sektor
-              memanfaatkan kekuatan data geospasial untuk mengambil keputusan
-              yang lebih baik, mengoptimalkan operasi, dan menemukan wawasan
-              baru.
+              Dengan perpaduan teknologi WebGIS dan AI canggih, kami membantu
+              pencari kos menemukan hunian ideal yang sesuai lokasi, budget, dan
+              preferensi, serta memberikan wawasan keuangan cerdas untuk
+              perencanaan jangka panjang dan keputusan hunian yang lebih baik.
             </p>
           </div>
           <div className="flex items-center justify-center">
@@ -187,18 +188,19 @@ const AboutUsPage = () => {
                     Visi Kami
                   </h3>
                   <p className="text-gray-700 mb-4">
-                    Menjadi pemimpin global dalam inovasi teknologi WebGIS yang
-                    menjembatani kesenjangan antara data spasial yang kompleks
-                    dan kebutuhan pengguna sehari-hari. Kami membayangkan dunia
-                    di mana data geospasial menjadi aksesibel dan bermanfaat
-                    bagi semua, dari perusahaan multinasional hingga masyarakat
-                    umum.
+                    Menjadi pionir dalam transformasi ekosistem hunian kos di
+                    Indonesia melalui teknologi WebGIS dan AI yang menghubungkan
+                    pencari kos dengan hunian ideal mereka. Kami membayangkan
+                    dunia di mana pencarian tempat tinggal menjadi proses yang
+                    menyenangkan, personal, dan mendukung kesehatan finansial
+                    jangka panjang.
                   </p>
                   <p className="text-gray-700">
-                    Kami berkomitmen untuk terus mengembangkan platform WebGIS
-                    yang mendemokratisasi akses ke informasi spasial, mendorong
-                    pengambilan keputusan berbasis data, dan menginspirasi
-                    generasi berikutnya dari inovator geospasial.
+                    Kami berkomitmen untuk terus mengembangkan platform yang
+                    memudahkan akses ke hunian berkualitas, mempermudah
+                    perencanaan keuangan hunian, dan menciptakan pengalaman
+                    pencarian kos yang lebih cerdas, efisien, dan sesuai dengan
+                    kebutuhan individu.
                   </p>
                 </div>
               </div>
@@ -216,28 +218,30 @@ const AboutUsPage = () => {
                     Misi Kami
                   </h3>
                   <p className="text-gray-700 mb-4">
-                    Misi kami adalah menyediakan solusi WebGIS yang inovatif,
-                    handal, dan mudah digunakan yang memungkinkan organisasi dan
-                    individu untuk:
+                    Misi kami adalah menyediakan platform pencarian kos berbasis
+                    WebGIS dengan AI yang komprehensif yang memungkinkan
+                    pengguna untuk:
                   </p>
                   <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-4">
                     <li>
-                      Mengubah data geospasial menjadi wawasan yang dapat
-                      ditindaklanjuti
+                      Menemukan kos ideal berdasarkan lokasi, harga, dan
+                      preferensi pribadi dengan mudah
                     </li>
                     <li>
-                      Mengoptimalkan operasi melalui analisis lokasi yang cerdas
+                      Merencanakan dan mengelola budget hunian dengan cerdas
+                      melalui fitur smart budgeting
                     </li>
                     <li>
-                      Menyederhanakan perencanaan dan pengambilan keputusan
-                      strategis
+                      Mendapatkan bantuan dan saran personal melalui chatbot
+                      asisten kos 24/7
                     </li>
                     <li>
-                      Meningkatkan kolaborasi antar departemen dan pemangku
-                      kepentingan
+                      Mengakses informasi lengkap tentang lingkungan sekitar kos
+                      melalui analisis geospasial
                     </li>
                     <li>
-                      Mendorong inovasi dengan visualisasi data yang lebih baik
+                      Membuat keputusan hunian berbasis data yang mendukung gaya
+                      hidup dan kesehatan finansial
                     </li>
                   </ul>
                 </div>
@@ -261,9 +265,9 @@ const AboutUsPage = () => {
                         Inovasi
                       </h4>
                       <p className="text-gray-700">
-                        Kami terus mendorong batas-batas teknologi geospasial
-                        untuk menciptakan solusi yang belum pernah ada
-                        sebelumnya.
+                        Kami terus mengintegrasikan teknologi terdepan seperti
+                        AI dan WebGIS untuk menciptakan solusi pencarian kos
+                        yang revolusioner.
                       </p>
                     </div>
                     <div className="p-4 bg-gray-50 rounded-lg">
@@ -271,27 +275,29 @@ const AboutUsPage = () => {
                         Akurasi
                       </h4>
                       <p className="text-gray-700">
-                        Kami berkomitmen pada ketepatan data dan analisis yang
-                        presisi, karena kualitas keputusan bergantung pada hal
-                        ini.
+                        Kami berkomitmen pada ketepatan data lokasi dan
+                        informasi kos untuk membantu pengguna membuat keputusan
+                        hunian yang tepat.
                       </p>
                     </div>
                     <div className="p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-semibold text-blue-900 mb-2">
-                        Kemudahan Pengguna
+                        Personalisasi
                       </h4>
                       <p className="text-gray-700">
-                        Kami membuat teknologi kompleks menjadi intuitif dan
-                        mudah diakses untuk semua tingkat keahlian.
+                        Kami menciptakan pengalaman pencarian kos yang sesuai
+                        dengan kebutuhan unik setiap individu melalui teknologi
+                        AI yang adaptif.
                       </p>
                     </div>
                     <div className="p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-semibold text-blue-900 mb-2">
-                        Keberlanjutan
+                        Literasi Keuangan
                       </h4>
                       <p className="text-gray-700">
-                        Kami merancang solusi yang membantu organisasi bekerja
-                        lebih efisien dan mengurangi dampak lingkungan.
+                        Kami membantu pengguna membuat keputusan hunian yang
+                        bertanggung jawab secara finansial melalui fitur smart
+                        budgeting dan perencanaan keuangan.
                       </p>
                     </div>
                   </div>
@@ -304,26 +310,26 @@ const AboutUsPage = () => {
         {/* Our Solutions */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold mb-8 text-blue-900 text-center">
-            Solusi Kami
+            Our Solutions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                title: "Pemetaan Interaktif",
+                title: "Pencarian Kos Berbasis Peta",
                 description:
-                  "Platform WebGIS yang memungkinkan visualisasi data kompleks dalam format peta yang interaktif dan mudah dipahami.",
+                  "Platform WebGIS yang memungkinkan pencarian kos berdasarkan lokasi, akses ke transportasi, fasilitas sekitar, dan preferensi pribadi.",
                 icon: <Globe className="w-10 h-10 text-blue-600" />,
               },
               {
-                title: "Analisis Spasial",
+                title: "Smart Budgeting",
                 description:
-                  "Alat analitik yang kuat untuk mengidentifikasi pola, tren, dan hubungan dalam data geospasial Anda.",
+                  "Fitur AI yang membantu merencanakan dan mengelola budget hunian, memprediksi pengeluaran, dan memberikan rekomendasi keuangan personal.",
                 icon: <Code className="w-10 h-10 text-green-600" />,
               },
               {
-                title: "Solusi Khusus Industri",
+                title: "Asisten Kos Chatbot",
                 description:
-                  "Aplikasi WebGIS yang disesuaikan untuk sektor seperti properti, transportasi, lingkungan, dan pemerintahan.",
+                  "Asisten virtual berbasis AI yang siap membantu menjawab pertanyaan, memberikan rekomendasi, dan memandu proses pencarian kos 24/7.",
                 icon: <Users className="w-10 h-10 text-purple-600" />,
               },
             ].map((solution, index) => (
@@ -338,13 +344,13 @@ const AboutUsPage = () => {
                   {solution.title}
                 </h3>
                 <p className="text-gray-700 mb-4">{solution.description}</p>
-                <a
+                {/* <a
                   href="#"
                   className="inline-flex items-center text-blue-600 hover:text-blue-800"
                 >
                   <span className="mr-1">Pelajari lebih lanjut</span>
                   <ChevronRight className="w-4 h-4" />
-                </a>
+                </a> */}
               </div>
             ))}
           </div>
@@ -353,29 +359,33 @@ const AboutUsPage = () => {
         {/* Our Team */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold mb-8 text-blue-900 text-center">
-            Tim Kami
+            Our Team
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {[
               {
                 name: "Muhammad Riski",
                 position: "Pendiri & CEO",
-                image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                image:
+                  "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
               },
               {
                 name: "Muhammad Iksir",
                 position: "Kepala Teknologi",
-                image: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                image:
+                  "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
               },
               {
                 name: "Ole Romeny",
                 position: "Ahli GIS Senior",
-                image: "https://images.unsplash.com/photo-1607079714592-f5b3bbbcba6f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                image:
+                  "https://images.unsplash.com/photo-1607079714592-f5b3bbbcba6f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
               },
               {
                 name: "Mang Iyar",
                 position: "Kepala Riset & Pengembangan",
-                image: "https://plus.unsplash.com/premium_photo-1727265736623-a4cf2e4850c2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                image:
+                  "https://plus.unsplash.com/premium_photo-1727265736623-a4cf2e4850c2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
               },
             ].map((member, index) => (
               <div
@@ -401,7 +411,7 @@ const AboutUsPage = () => {
         {/* Contact Section */}
         <div>
           <h2 className="text-3xl font-bold mb-8 text-blue-900 text-center">
-            Hubungi Kami
+            Connect With Us
           </h2>
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2">
@@ -413,9 +423,9 @@ const AboutUsPage = () => {
                     <div>
                       <p className="font-medium">Alamat</p>
                       <p>
-                        Jl. Teknologi Geospasial No. 123,
+                        Jl. Dr. Setiabudhi No. 229,
                         <br />
-                        Jakarta Selatan 12345,
+                        Bandung 40154 Jawa Barat,
                         <br />
                         Indonesia
                       </p>
@@ -425,7 +435,7 @@ const AboutUsPage = () => {
                     <Mail className="w-6 h-6 mr-3 flex-shrink-0" />
                     <div>
                       <p className="font-medium">Email</p>
-                      <p>info@geomappingsolutions.com</p>
+                      <p>info@kosthub.com</p>
                     </div>
                   </div>
                   <div className="flex items-start">

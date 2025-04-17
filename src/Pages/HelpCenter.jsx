@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Book, MessageCircle, HelpCircle, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
+import { Search, Book, MessageCircle, HelpCircle, ChevronDown, ChevronUp, ArrowRight, MapPin, DollarSign } from 'lucide-react';
 import Navbar from '../Components/Navbar';
 
 const HelpCenterPage = () => {
@@ -12,42 +12,63 @@ const HelpCenterPage = () => {
 
   const categories = [
     {
-      title: 'Memulai',
+      title: 'Memulai dengan KostHub',
       icon: <Book size={20} />,
       articles: [
-        'Cara membuat akun baru',
-        'Mengatur profil Anda',
-        'Cara mendaftar newsletter',
-        'Langkah-langkah verifikasi akun'
+        'Cara membuat akun pencari kos',
+        'Mengatur preferensi pencarian kos Anda',
+        'Mengatur filter lokasi dan budget',
+        'Membuat profil pencari kos yang menarik'
       ]
     },
     {
-      title: 'Fitur Umum',
-      icon: <HelpCircle size={20} />,
+      title: 'Pencarian Berbasis Peta',
+      icon: <MapPin size={20} />,
       articles: [
-        'Cara menggunakan dashboard',
-        'Mengatur notifikasi',
-        'Mengubah pengaturan bahasa',
-        'Melihat riwayat aktivitas'
+        'Cara menggunakan fitur pencarian peta interaktif',
+        'Memahami informasi lokasi dan lingkungan sekitar',
+        'Mencari kos berdasarkan jarak ke kampus/kantor',
+        'Melihat fasilitas umum di sekitar lokasi kos'
       ]
     },
     {
-      title: 'Pembayaran',
+      title: 'Smart Budgeting',
+      icon: <DollarSign size={20} />,
+      articles: [
+        'Menggunakan fitur Smart Budgeting untuk perencanaan keuangan',
+        'Menyesuaikan anggaran hunian dengan pendapatan',
+        'Memahami prediksi pengeluaran bulanan',
+        'Tips mengoptimalkan budget hunian dengan AI'
+      ]
+    },
+    {
+      title: 'Chatbot Asisten KostHub',
       icon: <MessageCircle size={20} />,
       articles: [
+        'Memaksimalkan bantuan Chatbot Asisten',
+        'Perintah khusus yang bisa digunakan ke Asisten',
+        'Mendapatkan rekomendasi kos personal dari Asisten',
+        'Menanyakan informasi detail kos ke Asisten'
+      ]
+    },
+    {
+      title: 'Booking dan Pembayaran',
+      icon: <HelpCircle size={20} />,
+      articles: [
+        'Cara memesan kos secara online',
         'Metode pembayaran yang tersedia',
-        'Cara mengubah informasi pembayaran',
-        'Memahami tagihan bulanan',
-        'Proses pengembalian dana'
+        'Memahami kebijakan pembatalan',
+        'Pengembalian deposit dan jaminan'
       ]
     }
   ];
 
   const popularArticles = [
-    'Cara mengatur ulang kata sandi',
-    'Mengatasi masalah login',
-    'Cara menghubungi tim dukungan',
-    'Langkah-langkah memperbarui aplikasi'
+    'Cara menemukan kos sesuai budget',
+    'Menggunakan filter Smart Map untuk mencari kos ideal',
+    'Tips berkomunikasi dengan pemilik kos',
+    'Bagaimana fitur Smart Budgeting membantu menghemat',
+    'Memanfaatkan Chatbot Asisten untuk riset kos'
   ];
 
   const filteredCategories = categories.filter(category => 
@@ -61,8 +82,8 @@ const HelpCenterPage = () => {
       {/* Header */}
       <header className="bg-blue-600 text-white p-6">
         <div className="max-w-5xl mx-auto mt-16">
-          <h1 className="text-3xl font-bold mb-4">Pusat Bantuan</h1>
-          <p className="mb-6">Temukan jawaban atas pertanyaan Anda</p>
+          <h1 className="text-3xl font-bold mb-4">Pusat Bantuan KostHub</h1>
+          <p className="mb-6">Temukan jawaban untuk perjalanan mencari kos impian Anda</p>
           
           {/* Search Bar */}
           <div className="relative">
@@ -72,7 +93,7 @@ const HelpCenterPage = () => {
             <input
               type="text"
               className="block w-full pl-10 pr-4 py-3 rounded-lg text-gray-900 focus:outline-none"
-              placeholder="Cari bantuan..."
+              placeholder="Cari bantuan seputar pencarian kos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -119,7 +140,7 @@ const HelpCenterPage = () => {
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow p-6 text-center">
-                <p>Tidak ada hasil yang ditemukan untuk `{searchQuery}`</p>
+                {/* <p>Tidak ada hasil yang ditemukan untuk "{searchQuery}"</p> */}
                 <button 
                   className="mt-3 text-blue-600 hover:text-blue-800"
                   onClick={() => setSearchQuery('')}
@@ -143,10 +164,15 @@ const HelpCenterPage = () => {
                 ))}
               </ul>
               <div className="mt-6 pt-4 border-t border-gray-200">
-                <h3 className="font-medium mb-3">Butuh bantuan lainnya?</h3>
+                <h3 className="font-medium mb-3">Masih bingung mencari kos?</h3>
                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-200">
-                  Hubungi Kami
+                  Chat dengan Asisten KostHub
                 </button>
+                <div className="mt-3 text-center">
+                  <a href="#" className="text-blue-600 hover:text-blue-800 text-sm">
+                    atau hubungi tim dukungan kami
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -160,10 +186,10 @@ const HelpCenterPage = () => {
             <div className="mb-4 md:mb-0">
               <p className="text-gray-600">&copy; 2025 KostHub. All rights reserved.</p>
             </div>
-            {/* <div className="flex space-x-4">
+            <div className="flex space-x-4">
               <a href="#" className="text-gray-600 hover:text-blue-600">Syarat Penggunaan</a>
               <a href="#" className="text-gray-600 hover:text-blue-600">Kebijakan Privasi</a>
-            </div> */}
+            </div>
           </div>
         </div>
       </footer>
