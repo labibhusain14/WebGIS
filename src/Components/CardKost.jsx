@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Wifi, ShowerHead, Bike, BedDouble, Heart, MapPin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // mapping nama fasilitas → icon lucide (sesuai yang kamu punya)
 const fasilitasIcons = {
@@ -13,6 +14,7 @@ const fasilitasIcons = {
 function CardKost() {
   const [kostList, setKostList] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://108.137.152.236/kost/")
@@ -33,6 +35,7 @@ function CardKost() {
   };
 
   const handleCardClick = (index) => {
+    navigate(`/detail/${kostList[index].id_kost}`);
     console.log(`Card ${index} clicked!`);
   };
 

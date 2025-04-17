@@ -23,7 +23,7 @@ function App() {
       <Route path="/line" element={<Line />} />
       <Route path="/polygon" element={<Polygon />} />
       <Route path="/coba" element={<Coba />} />
-      <Route path="/detail" element={<DetailPage />} />
+      <Route path="/detail/:id" element={<DetailPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/dashboard" element={<MarketIntelligenceDashboard />} />

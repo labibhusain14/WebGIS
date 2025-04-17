@@ -53,12 +53,12 @@ function Maps() {
 
   useEffect(() => {
     if (!mapContainer.current) return;
-
+    
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
-
+  
         map.current = new maplibregl.Map({
           container: mapContainer.current,
           style: `https://basemap.mapid.io/styles/street-new-generation/style.json?key=${MAP_SERVICE_KEY}`,
@@ -66,7 +66,7 @@ function Maps() {
           zoom: 15.5,
           pitch: 60,
         });
-
+  
         map.current.on("load", () => {
           markerRef.current = new maplibregl.Marker({
             color: "red",
@@ -74,7 +74,7 @@ function Maps() {
           })
             .setLngLat([longitude, latitude])
             .addTo(map.current);
-
+  
           const nav = new maplibregl.NavigationControl({
             showCompass: true,
             showZoom: true,
@@ -82,20 +82,73 @@ function Maps() {
             visualizeRoll: true,
           });
           map.current.addControl(nav, "bottom-right");
+  
+          fetchDataKost();
         });
       },
       (error) => {
         console.error("Gagal mendapatkan lokasi pengguna:", error);
       }
     );
-
+  
     return () => {
       if (map.current) {
         map.current.remove();
       }
     };
-  }, []);
-
+  }, [MAP_SERVICE_KEY]);
+  
+  
+  const fetchDataKost = async () => {
+    try {
+      const res = await fetch("http://108.137.152.236/kost/?skip=0&limit=20&fetch_all=false");
+      const json = await res.json();
+      const kostList = json.data;
+  
+      kostList.forEach((kost) => {
+        if (kost.longitude && kost.latitude) {
+          const popup = new maplibregl.Popup({
+            offset: 25,
+            className: 'modern-popup',
+            closeButton: false,
+          }).setHTML(`
+            <div class="p-4 bg-white rounded-xl shadow-lg min-w-[200px] font-sans">
+              <h3 class="text-base font-semibold text-gray-900 mb-2">${kost.nama_kost}</h3>
+              <p class="text-sm text-gray-600 mb-3 leading-relaxed">${kost.alamat}</p>
+              <div class="text-sm font-medium text-purple-700 bg-purple-50 px-3 py-1.5 rounded-lg inline-block">
+                Rp${Number(kost.harga_sewa).toLocaleString()}
+              </div>
+              <button 
+                class="mt-2 text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition"
+                id="detail-btn-${kost.id_kost}"
+              >
+                Lihat Detail
+              </button>
+            </div>
+          `);
+  
+          const marker = new maplibregl.Marker({ color: "#8e44ad" })
+            .setLngLat([kost.longitude, kost.latitude])
+            .setPopup(popup)
+            .addTo(map.current);
+  
+          popup.on('open', () => {
+            const detailButton = document.getElementById(`detail-btn-${kost.id_kost}`);
+            if (detailButton) {
+              detailButton.addEventListener('click', () => {
+                console.log(`Detail button clicked for kost ID: ${kost.id_kost}`);
+                window.location.href = `/detail/${kost.id_kost}`;
+              });
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Gagal mengambil data kost:", error);
+    }
+  };
+  
+  
   const navigateToTarget = () => {
     if (!map.current || !userLocation) {
       console.warn("Map instance or user location is missing");
