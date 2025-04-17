@@ -1,0 +1,131 @@
+import { useState } from "react";
+import { FaUser, FaLock, FaEyeSlash, FaEye, FaEnvelope } from "react-icons/fa";
+
+function RegisterPage() {
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    console.log("Registering with:", {
+      username,
+      email,
+      password,
+      confirmPassword,
+    });
+
+    // Validasi sederhana
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    // Redirect contoh
+    window.location.href = "/coba";
+  };
+
+  return (
+    <div className="flex h-screen items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100 font-poppins">
+      <div className="bg-white shadow-lg rounded-lg p-8 flex w-3/4 max-w-4xl">
+        {/* Form Section */}
+        <div className="w-1/2 p-8 flex flex-col justify-center">
+          <h2 className="text-2xl font-bold mb-3 text-center">Sign Up</h2>
+          <p className="text-sm text-center text-gray-500 mb-8">
+            Signup your free account with us
+          </p>
+          <form onSubmit={handleRegister}>
+            {/* Username */}
+            <div className="mb-4 flex items-center border rounded-md px-4 py-2 focus-within:ring-2 focus-within:ring-blue-400">
+              <FaUser className="text-gray-400 mr-3" />
+              <input
+                type="text"
+                placeholder="Username"
+                className="w-full focus:outline-none"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+
+            {/* Email */}
+            <div className="mb-4 flex items-center border rounded-md px-4 py-2 focus-within:ring-2 focus-within:ring-blue-400">
+              <FaEnvelope className="text-gray-400 mr-3" />
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="w-full focus:outline-none"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            {/* Password */}
+            <div className="mb-4 flex items-center border rounded-md px-4 py-2 focus-within:ring-2 focus-within:ring-blue-400 relative">
+              <FaLock className="text-gray-400 mr-3" />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className="w-full focus:outline-none"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-4 text-gray-500 focus:outline-none"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+
+            {/* Confirm Password */}
+            <div className="mb-4 flex items-center border rounded-md px-4 py-2 focus-within:ring-2 focus-within:ring-blue-400 relative">
+              <FaLock className="text-gray-400 mr-3" />
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm Password"
+                className="w-full focus:outline-none"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-4 text-gray-500 focus:outline-none"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-500 text-center mt-3">
+              Already have an account?{" "}
+              <a href="/login" className="text-blue-500 font-medium">
+                Sign in
+              </a>
+            </p>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-3 mt-3 rounded-lg hover:bg-blue-600 transition"
+            >
+              Sign Up
+            </button>
+          </form>
+        </div>
+
+        {/* Illustration Section */}
+        <div className="w-1/2 flex items-center justify-center">
+          <img
+            src="src/assets/regist.png"
+            alt="Login Illustration"
+            className="max-w-full"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default RegisterPage;

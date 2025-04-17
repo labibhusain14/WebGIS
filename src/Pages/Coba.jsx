@@ -1,20 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   Crosshair,
-  MapPin,
-  Wifi,
-  ShowerHead,
-  Bike,
-  Heart,
   Menu,
   ChevronDown,
   Search,
   Bot,
   X,
-  BedDouble,
   History,
   Wallet,
   MessageCircle,
@@ -22,13 +15,14 @@ import {
   Mic,
 } from "lucide-react";
 import Navbar from "../Components/Navbar";
+import CardKost from "../Components/CardKost";
 
 function Maps() {
   const MAP_SERVICE_KEY = import.meta.env.VITE_MAP_SERVICE_KEY;
   const mapContainer = useRef(null);
   const map = useRef(null);
   const markerRef = useRef(null);
-  const [activeTab, setActiveTab] = useState("Beranda");
+  // const [activeTab, setActiveTab] = useState("Beranda");
   const [userLocation, setUserLocation] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const filters = ["Price", "Facilities", "Type"];
@@ -36,12 +30,6 @@ function Maps() {
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedType, setSelectedType] = useState([]);
-
-  const navigate = useNavigate();
-
-  const handleCardClick = () => {
-    navigate(`/detail`);
-  };
 
   const facilitiesOptions = ["Lemari", "Kasur", "Parkir", "Kamar Mandi Dalam"];
   const typeOptions = ["Laki-laki", "Perempuan", "Campur"];
@@ -62,53 +50,6 @@ function Maps() {
   ]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef(null);
-  const tabs = [
-    "Beranda",
-    "Market Intelligence",
-    "Pusat Bantuan",
-    "Syarat & Ketentuan",
-  ];
-
-  const kosList = [
-    {
-      name: "Kos Harmoni",
-      location: "Sukasari",
-      price: "Rp1,8 juta",
-      image: "src/assets/image-1.jpg",
-      facilities: [Wifi, ShowerHead, Bike, BedDouble], // Tambahkan fasilitas
-    },
-    {
-      name: "Kos Jaya",
-      location: "Sukasari",
-      price: "Rp1,8 juta",
-      image: "src/assets/preview-1.jpg",
-      facilities: [Wifi, ShowerHead, Bike], // Tambahkan fasilitas
-    },
-    {
-      name: "Kos Ade",
-      location: "Sukajadi",
-      price: "Rp2,8 juta",
-      image: "src/assets/preview-2.jpg",
-      facilities: [Wifi, ShowerHead, Bike], // Tambahkan fasilitas
-    },
-    {
-      name: "Kos Ade",
-      location: "Sukajadi",
-      price: "Rp2,8 juta",
-      image: "src/assets/preview-2.jpg",
-      facilities: [Wifi, ShowerHead, Bike], // Tambahkan fasilitas
-    },
-    {
-      name: "Kos Ade",
-      location: "Sukajadi",
-      price: "Rp2,8 juta",
-      image: "src/assets/preview-2.jpg",
-      facilities: [Wifi, ShowerHead, Bike], // Tambahkan fasilitas
-    },
-  ];
-  const [likedItems, setLikedItems] = useState(
-    Array(kosList.length).fill(false)
-  );
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -213,21 +154,14 @@ function Maps() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const toggleLike = (index) => {
-    setLikedItems((prev) => {
-      const newLiked = [...prev];
-      newLiked[index] = !newLiked[index];
-      return newLiked;
-    });
-  };
   return (
     <div className="relative h-screen">
-      < Navbar />
-
+      <Navbar />
       {/* Sidebar */}
       <div
-        className={`fixed top-[64px] h-[calc(100vh-61px)] w-[350px] bg-gray-200 shadow-md transition-all duration-700 ${isSidebarOpen ? "left-0" : "-translate-x-full"
-          } flex flex-col items-center z-40 border-t border-gray-300 overflow-y-auto`}
+        className={`fixed top-[64px] h-[calc(100vh-61px)] w-[450px] bg-gray-200 shadow-md transition-all duration-700 ${
+          isSidebarOpen ? "left-0" : "-translate-x-full"
+        } flex flex-col items-center z-40 border-t border-gray-300 overflow-y-auto`}
       >
         <div className="flex items-center bg-white ml-2 m-5 rounded-lg p-2 shadow-md w-72">
           <input
@@ -248,14 +182,16 @@ function Maps() {
                 >
                   {label}
                   <ChevronDown
-                    className={`w-4 h-4 ml-2 transition-transform ${openDropdown === label ? "rotate-180" : "rotate-0"
-                      }`}
+                    className={`w-4 h-4 ml-2 transition-transform ${
+                      openDropdown === label ? "rotate-180" : "rotate-0"
+                    }`}
                   />
                 </button>
                 {openDropdown === label && (
                   <div
-                    className={`absolute left-0 mt-2 ${label === "Price" ? "w-80" : "w-40"
-                      } bg-white shadow-lg rounded-lg p-3 text-sm z-10`}
+                    className={`absolute left-0 mt-2 ${
+                      label === "Price" ? "w-80" : "w-40"
+                    } bg-white shadow-lg rounded-lg p-3 text-sm z-10`}
                   >
                     {label === "Price" && (
                       <div className="space-y-2">
@@ -363,59 +299,16 @@ function Maps() {
             ))}
           </div>
         </div>
-
-        {/* Card Button Section */}
-        <div className="w-[90%] my-5 ml-2 flex flex-wrap gap-4 justify-start">
-          {kosList.map((kos, index) => (
-            <div
-              key={index}
-              onClick={() => handleCardClick(index)}
-              className="bg-white rounded-2xl shadow-md cursor-pointer w-[45%] overflow-hidden"
-            >
-              <img
-                src={kos.image}
-                alt={kos.name}
-                className="w-full h-[100px] object-cover"
-              />
-              <div className="p-3">
-                <div className="flex justify-between">
-                  <div className="font-semibold text-sm">{kos.name}</div>
-                  <button onClick={() => toggleLike(index)}>
-                    <Heart
-                      className={`w-4 h-4 mt-1 transition-all ${likedItems[index]
-                          ? "text-red-500 fill-red-500"
-                          : "text-gray-400"
-                        }`}
-                    />
-                  </button>
-                </div>
-                <div className="flex items-center text-xs text-gray-500">
-                  <MapPin className="w-3 h-3 text-gray-500 mr-1" />
-                  {kos.location}
-                </div>
-                <div className="flex items-center gap-1 mt-1 ">
-                  {kos.facilities.map((Icon, idx) => (
-                    <Icon key={idx} className="w-4 h-4" />
-                  ))}
-                </div>
-                <div className="text-xs mt-1 flex">
-                  <div className="font-semibold"> {kos.price}</div>
-                  <span className="ml-1"> /bulan</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <CardKost />
       </div>
-
       <button
         onClick={toggleSidebar}
-        className={`fixed top-[75px] transition-all duration-700 ${isSidebarOpen ? "left-[350px]" : "left-0"
-          } bg-gray-800 text-white p-2 rounded-r-md z-10`}
+        className={`fixed top-[75px] transition-all duration-700 ${
+          isSidebarOpen ? "left-[450px]" : "left-0"
+        } bg-gray-800 text-white p-2 rounded-r-md z-10`}
       >
         <Menu className="w-5 h-5" />
       </button>
-
       {/* Tombol Navigate */}
       <button
         onClick={navigateToTarget}
@@ -423,7 +316,6 @@ function Maps() {
       >
         <Crosshair className="w-4 h-4 text-gray-700" />
       </button>
-
       <div className="fixed bottom-6 right-6 flex flex-col items-end z-10">
         {isOpen && (
           <div className="w-[450px] h-[500px] bg-[#ECF0F1] shadow-lg rounded-lg flex flex-col fixed bottom-10 right-14 z-50 border border-gray-300">
@@ -504,7 +396,7 @@ function Maps() {
                   </div>
                   <h4 className="my-4 font-semibold">Recommendation</h4>
                   <div className="flex overflow-x-auto space-x-4">
-                    {kosList.map((kos, index) => (
+                    {/* {kosList.map((kos, index) => (
                       <div
                         key={index}
                         className="min-w-[160px] bg-white shadow-md rounded-lg p-2"
@@ -519,7 +411,7 @@ function Maps() {
                           {kos.price}/bulan
                         </p>
                       </div>
-                    ))}
+                    ))} */}
                   </div>
                   <textarea
                     className="w-full mt-4 border rounded-md p-4 text-sm focus:outline-none"
@@ -554,7 +446,6 @@ function Maps() {
           </div>
         )}
       </div>
-
       <div className="fixed top-24 right-2 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -563,7 +454,6 @@ function Maps() {
           <Bot size={18} />
         </button>
       </div>
-
       {/* Container Peta */}
       <div ref={mapContainer} className="flex-1 h-screen" />
     </div>
