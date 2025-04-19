@@ -1,15 +1,45 @@
 import { useState } from "react";
-import { FaUser, FaLock, FaEyeSlash, FaEye } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaEyeSlash, FaEye } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Logging in with", email, password);
-    window.location.href = "/coba";
+
+    try {
+      const response = await fetch("http://108.137.152.236/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+
+      const data = await response.json();
+
+      localStorage.setItem("token", data.token);
+      toast.success("Login berhasil!", {
+        position: "top-center",
+      });
+
+      setTimeout(() => {
+        window.location.href = "/coba";
+      }, 1500);
+    } catch (error) {
+      toast.error("Email atau password salah!", {
+        position: "top-center",
+      });
+    }
   };
 
   return (
@@ -20,7 +50,7 @@ function LoginPage() {
           <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
           <form onSubmit={handleLogin}>
             <div className="mb-4 flex items-center border rounded-md px-4 py-2 focus-within:ring-2 focus-within:ring-blue-400">
-              <FaUser className="text-gray-400 mr-3" />
+              <FaEnvelope className="text-gray-400 mr-3" />
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -58,17 +88,26 @@ function LoginPage() {
               Login
             </button>
           </form>
+
+          <p className="text-center text-sm mt-4">
+            Belum punya akun?{" "}
+            <a href="/register" className="text-blue-500 hover:underline">
+              Daftar
+            </a>
+          </p>
         </div>
 
         {/* Illustration Section */}
         <div className="w-1/2 flex items-center justify-center">
           <img
-            src="src\assets\login.png"
+            src="src/assets/login.png"
             alt="Login Illustration"
             className="max-w-full"
           />
         </div>
       </div>
+
+      <ToastContainer position="top-center" />
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FaUser, FaLock, FaEyeSlash, FaEye, FaEnvelope } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -9,23 +11,43 @@ function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Registering with:", {
-      username,
-      email,
-      password,
-      confirmPassword,
-    });
 
-    // Validasi sederhana
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
 
-    // Redirect contoh
-    window.location.href = "/coba";
+    try {
+      const response = await fetch("http://108.137.152.236/users/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          nama: username,
+          email: email,
+          password: password,
+          role: "pencari",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Registration successful! Redirecting to login...", {
+          autoClose: 2000,
+          onClose: () => (window.location.href = "/login"),
+        });
+      } else {
+        toast.error(`Registration failed: ${data.detail || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("An error occurred during registration.");
+    }
   };
 
   return (
@@ -124,6 +146,9 @@ function RegisterPage() {
           />
         </div>
       </div>
+
+      {/* Toast container */}
+      <ToastContainer position="top-center" />
     </div>
   );
 }
