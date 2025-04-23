@@ -7,7 +7,7 @@ const Navbar = () => {
   const location = useLocation();
 
   const tabRoutes = {
-    Beranda: "/coba",
+    Beranda: "/home",
     "Market Intelligence": "/dashboard",
     "Pusat Bantuan": "/pusat-bantuan",
     "About Us": "/about",
