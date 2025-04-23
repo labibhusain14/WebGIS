@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Heart, Eye, MessageCircle, Lightbulb, Home, Ruler, MapPin, Wifi, Tv, Coffee, ShowerHead } from "lucide-react";
+import { Heart, Eye, MessageCircle, Home, Ruler, MapPin, Wifi, Tv, Coffee, ShowerHead } from "lucide-react";
 import { Button } from "../Components/Button";
 
 const DetailPage = () => {
@@ -8,7 +8,8 @@ const DetailPage = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [property, setProperty] = useState({});
-  
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false); // State untuk modal
+
   useEffect(() => {
     fetch(`http://108.137.152.236/kost/${id}`)
       .then((res) => res.json())
@@ -43,25 +44,21 @@ const DetailPage = () => {
   ];
 
   const images = property.gambar_kost && property.gambar_kost.length
-  ? property.gambar_kost.map((src, index) => ({
-      id: index,
-      src,
-      alt: `Gambar ${index + 1}`,
-    }))
-  : defaultImages;
-  
+    ? property.gambar_kost.map((src, index) => ({
+        id: index,
+        src,
+        alt: `Gambar ${index + 1}`,
+      }))
+    : defaultImages;
+
   if (!property || Object.keys(property).length === 0) {
     return <div className="text-center p-4">Loading...</div>;
   }
 
   // Format price to IDR
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID').format(parseInt(price));
+    return new Intl.NumberFormat("id-ID").format(parseInt(price));
   };
-
-  // Get featured facilities (limited to 4)
-  // const featuredFacilities = property.fasilitas?.slice(0, 4) || [];
-  // const additionalFacilitiesCount = Math.max(0, property.fasilitas?.length - 4 || 0);
 
   const openModal = (image) => {
     setSelectedImage(image);
@@ -77,6 +74,17 @@ const DetailPage = () => {
     setIsFavorite(!isFavorite);
   };
 
+  // Fungsi untuk membuka/tutup modal kontak
+  const openContactModal = () => {
+    setIsContactModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeContactModal = () => {
+    setIsContactModalOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen p-4">
       {/* Main Card */}
@@ -89,7 +97,7 @@ const DetailPage = () => {
             className="w-full h-48 md:h-80 object-cover opacity-85"
           />
           <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white px-4 py-1 rounded">
-            <h2 className="text-xl font-bold">{property.nama_kost?.split(' ').slice(0, 3).join(' ')}</h2>
+            <h2 className="text-xl font-bold">{property.nama_kost?.split(" ").slice(0, 3).join(" ")}</h2>
           </div>
           <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-sm">
             <span>View all {images.length} photos</span>
@@ -135,12 +143,13 @@ const DetailPage = () => {
             <div className="mb-6">
               <h3 className="font-semibold text-lg mb-3">Fasilitas</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {Array.isArray(property.fasilitas) && property.fasilitas.map((facility) => (
-                  <div key={facility.id_fasilitas} className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                    <span className="text-gray-700">{facility.nama_fasilitas}</span>
-                  </div>
-                ))}
+                {Array.isArray(property.fasilitas) &&
+                  property.fasilitas.map((facility) => (
+                    <div key={facility.id_fasilitas} className="flex items-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                      <span className="text-gray-700">{facility.nama_fasilitas}</span>
+                    </div>
+                  ))}
               </div>
             </div>
 
@@ -171,7 +180,7 @@ const DetailPage = () => {
                     className="absolute top-4 right-4 text-white text-3xl hover:text-gray-300 focus:outline-none"
                     onClick={closeModal}
                   >
-                    &times;
+                    ×
                   </button>
 
                   <img
@@ -188,38 +197,10 @@ const DetailPage = () => {
           <div className="bg-gray-50 p-4 md:p-6 md:w-1/3">
             <div className="mb-4">
               <h3 className="font-semibold text-xl mb-2">Informasi Singkat</h3>
-              {/* <p className="mb-2">
-                <span className="font-semibold">ID Kost:</span> {property.id_kost || "N/A"}
-              </p> */}
               <p className="mb-2">
                 <span className="font-semibold">Sertifikat:</span> {property.jenis_sertifikat || "N/A"}
               </p>
             </div>
-
-            {/* <div className="flex flex-col space-y-2 mb-4">
-              {featuredFacilities.map((facility) => (
-                <div key={facility.id_fasilitas} className="p-3 bg-white rounded-lg shadow-sm">
-                  <div className="flex items-center">
-                    {facility.nama_fasilitas === "WiFi" && <Wifi size={18} className="mr-2 text-gray-500" />}
-                    {facility.nama_fasilitas === "TV" && <Tv size={18} className="mr-2 text-gray-500" />}
-                    {facility.nama_fasilitas === "K. Mandi Dalam" && <ShowerHead size={18} className="mr-2 text-gray-500" />}
-                    {facility.nama_fasilitas === "Dapur" && <Coffee size={18} className="mr-2 text-gray-500" />}
-                    {facility.id_fasilitas !== 9 && 
-                     facility.id_fasilitas !== 34 && 
-                     facility.id_fasilitas !== 28 && 
-                     facility.id_fasilitas !== 11 && 
-                     <MessageCircle size={18} className="mr-2 text-gray-500" />}
-                    <span className="text-sm">{facility.nama_fasilitas}</span>
-                  </div>
-                </div>
-              ))}
-              
-              {additionalFacilitiesCount > 0 && (
-                <div className="p-3 bg-white rounded-lg shadow-sm text-center">
-                  <span className="text-sm text-gray-500">+{additionalFacilitiesCount} fasilitas lainnya</span>
-                </div>
-              )}
-            </div> */}
 
             <div className="mb-6">
               <h3 className="text-xl font-bold">
@@ -231,7 +212,10 @@ const DetailPage = () => {
             </div>
 
             <div className="flex gap-2">
-              <Button className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200">
+              <Button
+                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
+                onClick={openContactModal} // Buka modal saat tombol diklik
+              >
                 Hubungi
               </Button>
               <Button
@@ -246,7 +230,7 @@ const DetailPage = () => {
                 />
               </Button>
             </div>
-            
+
             {/* Map location */}
             <div className="mt-4">
               <h3 className="font-semibold text-lg mb-2">Lokasi</h3>
@@ -257,16 +241,64 @@ const DetailPage = () => {
                   height="250"
                   className="border-0"
                   style={{ border: 0 }}
-                  src={`https://www.google.com/maps?q=${encodeURIComponent(property.alamat || '')}&output=embed`}
+                  src={`https://www.google.com/maps?q=${encodeURIComponent(property.alamat || "")}&output=embed`}
                   allowFullScreen
                   loading="lazy"
                 ></iframe>
               </div>
-
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal untuk Informasi Pemilik */}
+      {isContactModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          onClick={closeContactModal}
+        >
+          <div
+            className="bg-white rounded-lg p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Informasi Pemilik</h3>
+              <button
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+                onClick={closeContactModal}
+              >
+                ×
+              </button>
+            </div>
+            <div className="text-gray-700">
+              <p className="mb-2">
+                <span className="font-semibold">Nama:</span>{" "}
+                {property.pemilik?.nama || "Tidak tersedia"}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Telepon:</span>{" "}
+                {property.pemilik?.telepon || "Tidak tersedia"}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Email:</span>{" "}
+                {property.pemilik?.email || "Tidak tersedia"}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Alamat:</span>{" "}
+                {property.pemilik?.alamat || "Tidak tersedia"}
+              </p>
+            </div>
+            <div className="flex justify-end mt-4">
+              <Button
+                className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                onClick={closeContactModal}
+              >
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
