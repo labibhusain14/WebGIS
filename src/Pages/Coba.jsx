@@ -13,6 +13,7 @@ import {
   MessageCircle,
   Send,
   Mic,
+  MapPin,
 } from "lucide-react";
 import Navbar from "../Components/Navbar";
 import CardKost from "../Components/CardKost";
@@ -35,6 +36,8 @@ function Maps() {
   const typeOptions = ["Laki-laki", "Perempuan", "Campur"];
   const [isOpen, setIsOpen] = useState(false);
   const [activeAssistant, setActiveAssistant] = useState("assistant");
+
+  const [kecamatan, setKecamatan] = useState("");
 
   const [messages, setMessages] = useState([
     { text: "Halo, apakah ada yang bisa saya bantu?", sender: "bot" },
@@ -127,6 +130,72 @@ function Maps() {
           zoom: 15.5,
           pitch: 60,
         });
+
+        // map.current.on("click", (e) => {
+        //   const coordinates = e.lngLat;
+        //   if (markerRef.current) {
+        //     markerRef.current.setLngLat(coordinates);
+        //   } else {
+        //     markerRef.current = new maplibregl.Marker({
+        //       color: "red",
+        //       draggable: false,
+        //     })
+        //       .setLngLat(coordinates)
+        //       .addTo(map.current);
+        //   }
+        //   const latitude = coordinates.lat;
+        //   const longitude = coordinates.lng;
+
+        //   setBudgetParams((prev) => ({
+        //     ...prev,
+        //     latitude,
+        //     longitude,
+        //   }));
+
+        //   });
+
+
+        map.current.on("click", async (e) => {
+          const coordinates = e.lngLat;
+          const latitude = coordinates.lat;
+          const longitude = coordinates.lng;
+        
+          // Tambahkan marker
+          if (markerRef.current) {
+            markerRef.current.setLngLat(coordinates);
+          } else {
+            markerRef.current = new maplibregl.Marker({
+              color: "red",
+              draggable: false,
+            })
+              .setLngLat(coordinates)
+              .addTo(map.current);
+          }
+        
+          setBudgetParams((prev) => ({
+            ...prev,
+            latitude,
+            longitude,
+          }));
+        
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const kecamatan =
+            data.address.suburb || 
+            data.address.village || 
+            data.address.town || 
+            data.address.city_district || 
+            data.address.county;
+            setKecamatan(kecamatan);
+      
+          } catch (err) {
+            console.error("Gagal ambil nama kota:", err);
+          }
+        });
+        
   
         map.current.on("load", () => {
           markerRef.current = new maplibregl.Marker({
@@ -617,7 +686,16 @@ function Maps() {
                         />
                       </div>
                     </div>
-                    
+                    <div>
+                      {/* Kecamatan Display */}
+                      {kecamatan && (
+                        <div className="flex items-center mb-2">
+                          <MapPin size={18} className="inline-block mr-1"/>
+                          <p className="block text-gray-600 mb-1 text-xs">{kecamatan}</p>
+                        </div>
+                      )}
+                      
+                    </div>
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <div>
                         <label className="block text-gray-600 mb-1 text-xs">Panjang (m)</label>
