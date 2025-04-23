@@ -246,7 +246,7 @@ const AboutUsPage = () => {
               {
                 name: 'Mohammad Labib Husain',
                 position: 'UI/UX Designer',
-                image: 'https://media.licdn.com/dms/image/v2/D5635AQGxvwimx3-BMQ/profile-framedphoto-shrink_800_800/profile-framedphoto-shrink_800_800/0/1700819436326?e=1745931600&v=beta&t=IERRee-90OR-G6hZwld39T7WwZh73wItpQLqufspjLQ',
+                image: 'https://avatars.githubusercontent.com/u/119772365?v=4',
               },
               {
                 name: 'Siti Milatu Diniah',
