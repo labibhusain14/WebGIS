@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaEnvelope, FaLock, FaEyeSlash, FaEye } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import loginIllustration from "../assets/login.png";
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -103,7 +103,7 @@ function LoginPage() {
         {/* Illustration Section */}
         <div className="w-1/2 flex items-center justify-center">
           <img
-            src="src/assets/login.png"
+            src={loginIllustration}
             alt="Login Illustration"
             className="max-w-full"
           />

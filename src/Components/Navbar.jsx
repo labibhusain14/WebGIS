@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { FiLogOut } from "react-icons/fi"; // Icon logout
+import Logo from "../assets/Logo.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ const Navbar = () => {
     }
   }, [location.pathname]);
 
+  const handleNavigation = (name) => {
+    setActiveTab(name);
+    navigate(tabRoutes[name]);
+    setMobileMenuOpen(false);
+  };
   useEffect(() => {
     // Tutup dropdown jika klik di luar elemen
     const handleClickOutside = (event) => {
@@ -71,9 +77,10 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between bg-white shadow-md p-3 font-poppins">
       <div className="flex items-center font-bold text-gray-500">
-        <img src="src/assets/Logo.png" alt="Logo" className="w-10 h-10 mr-2" />
+        <img src={Logo} alt="Logo" className="w-10 h-10 mr-2" />
         <span className="text-lg">KOSTHUB</span>
       </div>
+
       <div className="flex gap-6">
         {Object.keys(tabRoutes).map((name) => (
           <button
@@ -92,6 +99,7 @@ const Navbar = () => {
           </button>
         ))}
       </div>
+
       <div className="relative flex items-center font-bold" ref={dropdownRef}>
         <div
           className="text-base text-gray-600 cursor-pointer"

@@ -1,16 +1,8 @@
 import { useEffect, useState } from "react";
-import {
-  BedDouble,
-  Heart,
-  MapPin,
-  FanIcon,
-  SortAscIcon,
-  SortDesc,
-} from "lucide-react";
+import { BedDouble, Heart, MapPin, FanIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   FaParking,
-  FaVideo,
   FaTv,
   FaDoorOpen,
   FaDoorClosed,
@@ -32,8 +24,7 @@ const fasilitasIcons = {
   "Lemari Baju": BiCabinet,
   "Kipas Angin": FanIcon,
   AC: TbAirConditioning,
-  CCTV: FaVideo,
-  TV: SortDesc,
+  TV: FaTv,
   "TV Kabel": FaTv,
   WiFi: FaWifi,
   "Termasuk listrik": GiElectric,
@@ -51,7 +42,6 @@ const iconKategori = {
   lemari: ["Lemari Baju"],
   kipas: ["Kipas Angin"],
   ac: ["AC"],
-  cctv: ["CCTV"],
   tv: ["TV", "TV Kabel"],
   wifi: ["WiFi"],
   listrik: ["Termasuk listrik"],
