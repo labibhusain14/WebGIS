@@ -20,7 +20,7 @@ function RegisterPage() {
     }
 
     try {
-      const response = await fetch('http://108.137.152.236/users/', {
+      const response = await fetch('https://ggnt.mapid.co.id/api/users/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

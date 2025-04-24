@@ -11,7 +11,7 @@ const DetailPage = () => {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false); // State untuk modal
 
   useEffect(() => {
-    fetch(`http://108.137.152.236/kost/${id}`)
+    fetch(`https://ggnt.mapid.co.id/api/kost/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProperty(data.data);
@@ -58,7 +58,7 @@ const DetailPage = () => {
 
   // Format price to IDR
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("id-ID").format(parseInt(price));
+    return new Intl.NumberFormat('id-ID').format(parseInt(price));
   };
 
   const openModal = (image) => {
@@ -78,12 +78,12 @@ const DetailPage = () => {
   // Fungsi untuk membuka/tutup modal kontak
   const openContactModal = () => {
     setIsContactModalOpen(true);
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
   };
 
   const closeContactModal = () => {
     setIsContactModalOpen(false);
-    document.body.style.overflow = "auto";
+    document.body.style.overflow = 'auto';
   };
 
   return (
@@ -94,7 +94,7 @@ const DetailPage = () => {
         <div className="relative">
           <img src={images[0]?.src || property.image} alt={property.nama_kost} className="w-full h-48 md:h-80 object-cover" />
           <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white px-4 py-1 rounded">
-            <h2 className="text-xl font-bold">{property.nama_kost?.split(" ").slice(0, 3).join(" ")}</h2>
+            <h2 className="text-xl font-bold">{property.nama_kost?.split(' ').slice(0, 3).join(' ')}</h2>
           </div>
           <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-sm">
             <span>View all {images.length} photos</span>
@@ -188,7 +188,9 @@ const DetailPage = () => {
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={openContactModal} className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200">Hubungi</Button>
+              <Button onClick={openContactModal} className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200">
+                Hubungi
+              </Button>
               <Button className="w-12 h-10 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-100 transition duration-200" onClick={toggleFavorite}>
                 <Heart size={20} className={isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
               </Button>
@@ -204,7 +206,7 @@ const DetailPage = () => {
                   height="250"
                   className="border-0"
                   style={{ border: 0 }}
-                  src={`https://www.google.com/maps?q=${encodeURIComponent(property.alamat || "")}&output=embed`}
+                  src={`https://www.google.com/maps?q=${encodeURIComponent(property.alamat || '')}&output=embed`}
                   allowFullScreen
                   loading="lazy"
                 ></iframe>
@@ -216,47 +218,35 @@ const DetailPage = () => {
 
       {/* Modal untuk Informasi Pemilik */}
       {isContactModalOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4"
-          onClick={closeContactModal}
-        >
-          <div
-            className="bg-white rounded-lg p-6 max-w-md w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4" onClick={closeContactModal}>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Informasi Pemilik</h3>
-              <button
-                className="text-gray-500 hover:text-gray-700 text-2xl"
-                onClick={closeContactModal}
-              >
+              <button className="text-gray-500 hover:text-gray-700 text-2xl" onClick={closeContactModal}>
                 ×
               </button>
             </div>
             <div className="text-gray-700 space-y-2">
-            <div className="flex">
-              <span className="w-24 font-semibold">Nama:</span>
-              <span>{property.pemilik?.nama || "Mas Ihsan"}</span>
+              <div className="flex">
+                <span className="w-24 font-semibold">Nama:</span>
+                <span>{property.pemilik?.nama || 'Mas Ihsan'}</span>
+              </div>
+              <div className="flex">
+                <span className="w-24 font-semibold">Telepon:</span>
+                <span>{property.pemilik?.telepon || '0878-1234-5678'}</span>
+              </div>
+              <div className="flex">
+                <span className="w-24 font-semibold">Email:</span>
+                <span>{property.pemilik?.email || 'masisan@gmail.com'}</span>
+              </div>
+              <div className="flex">
+                <span className="w-24 font-semibold">Alamat:</span>
+                <span>{property.pemilik?.alamat || 'Jl. Raya No. 123, Bandung'}</span>
+              </div>
             </div>
-            <div className="flex">
-              <span className="w-24 font-semibold">Telepon:</span>
-              <span>{property.pemilik?.telepon || "0878-1234-5678"}</span>
-            </div>
-            <div className="flex">
-              <span className="w-24 font-semibold">Email:</span>
-              <span>{property.pemilik?.email || "masisan@gmail.com"}</span>
-            </div>
-            <div className="flex">
-              <span className="w-24 font-semibold">Alamat:</span>
-              <span>{property.pemilik?.alamat || "Jl. Raya No. 123, Bandung"}</span>
-            </div>
-          </div>
 
             <div className="flex justify-end mt-4">
-              <Button
-                className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-                onClick={closeContactModal}
-              >
+              <Button className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600" onClick={closeContactModal}>
                 Tutup
               </Button>
             </div>
