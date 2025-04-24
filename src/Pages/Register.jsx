@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FaUser, FaLock, FaEyeSlash, FaEye, FaEnvelope } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Regist from './assets/regist.png';
+import Regist from '../assets/regist.png';
 function RegisterPage() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
