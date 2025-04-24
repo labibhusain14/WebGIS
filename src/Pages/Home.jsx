@@ -86,7 +86,7 @@ function Maps() {
   const [budgetParams, setBudgetParams] = useState({
     panjang: 4,
     lebar: 4,
-    fasilitas: ["Meja"],
+    fasilitas: ["meja"],
   });
 
   const facilityGroups = {
