@@ -1,30 +1,64 @@
-import { useEffect, useState } from 'react';
-import { Wifi, ShowerHead, Bike, BedDouble, Heart, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import {
+  BedDouble,
+  Heart,
+  MapPin,
+  FanIcon,
+  SortAscIcon,
+  SortDesc,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaParking,
+  FaVideo,
+  FaTv,
+  FaDoorOpen,
+  FaDoorClosed,
+  FaWifi,
+} from "react-icons/fa";
+import { TbAirConditioning } from "react-icons/tb";
+import { BiCabinet } from "react-icons/bi";
+import { GiElectric } from "react-icons/gi";
 
 // mapping nama fasilitas → icon lucide (sesuai yang kamu punya)
 const fasilitasIcons = {
-  WiFi: Wifi,
-  Shower: ShowerHead,
-  'Parkir Sepeda': Bike,
+  "K. Mandi Dalam": FaDoorClosed,
+  "K. Mandi Luar": FaDoorOpen,
+  "Parkir Motor": FaParking,
+  "Parkir Mobil": FaParking,
+  "Parkir Sepeda": FaParking,
+  "Parkir Motor & Sepeda": FaParking,
   Kasur: BedDouble,
-  // tambahkan sesuai kebutuhan
+  "Lemari Baju": BiCabinet,
+  "Kipas Angin": FanIcon,
+  AC: TbAirConditioning,
+  CCTV: FaVideo,
+  TV: SortDesc,
+  "TV Kabel": FaTv,
+  WiFi: FaWifi,
+  "Termasuk listrik": GiElectric,
 };
 
-function CardKost() {
-  const [kostList, setKostList] = useState([]);
+const iconKategori = {
+  mandi: ["K. Mandi Dalam", "K. Mandi Luar"],
+  parkir: [
+    "Parkir Motor",
+    "Parkir Mobil",
+    "Parkir Sepeda",
+    "Parkir Motor & Sepeda",
+  ],
+  kasur: ["Kasur"],
+  lemari: ["Lemari Baju"],
+  kipas: ["Kipas Angin"],
+  ac: ["AC"],
+  cctv: ["CCTV"],
+  tv: ["TV", "TV Kabel"],
+  wifi: ["WiFi"],
+  listrik: ["Termasuk listrik"],
+};
+function CardKost({ filteredKost }) {
   const [likedItems, setLikedItems] = useState([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetch('http://108.137.152.236/kost/')
-      .then((res) => res.json())
-      .then((data) => {
-        setKostList(data.data);
-        setLikedItems(Array(data.data.length).fill(false));
-      })
-      .catch((err) => console.error('Error fetching kost data:', err));
-  }, []);
 
   const toggleLike = (index) => {
     setLikedItems((prev) => {
@@ -35,18 +69,32 @@ function CardKost() {
   };
 
   const handleCardClick = (index) => {
-    navigate(`/detail/${kostList[index].id_kost}`);
+    navigate(`/detail/${filteredKost[index].id_kost}`);
     console.log(`Card ${index} clicked!`);
   };
 
   return (
     <div className="w-[98%] my-5 flex flex-wrap gap-4 justify-center">
-      {kostList.map((kost, index) => (
-        <div key={kost.id_kost} onClick={() => handleCardClick(index)} className="bg-white rounded-2xl shadow-md cursor-pointer w-[45%] overflow-hidden">
-          <img src={kost.gambar_kost.length > 0 ? kost.gambar_kost[0].url_gambar : 'src/assets/preview-2.jpg'} alt={kost.nama_kost} className="w-full h-[150px] object-cover" />
+      {filteredKost.map((kost, index) => (
+        <div
+          key={kost.id_kost}
+          onClick={() => handleCardClick(index)}
+          className="bg-white rounded-2xl shadow-md cursor-pointer w-[45%] overflow-hidden"
+        >
+          <img
+            src={
+              kost.gambar_kost.length > 0
+                ? kost.gambar_kost[0].url_gambar
+                : "src/assets/preview-2.jpg"
+            }
+            alt={kost.nama_kost}
+            className="w-full h-[150px] object-cover"
+          />
           <div className="p-3">
             <div className="flex justify-between items-start">
-              <div className="font-semibold text-sm line-clamp-2">{kost.nama_kost}</div>
+              <div className="font-semibold text-sm line-clamp-2">
+                {kost.nama_kost}
+              </div>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -54,7 +102,13 @@ function CardKost() {
                 }}
                 className="mt-[2px] ml-1" // geser dikit ke atas
               >
-                <Heart className={`w-5 h-5 transition-all ${likedItems[index] ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} />
+                <Heart
+                  className={`w-5 h-5 transition-all ${
+                    likedItems[index]
+                      ? "text-red-500 fill-red-500"
+                      : "text-gray-400"
+                  }`}
+                />
               </button>
             </div>
 
@@ -63,15 +117,29 @@ function CardKost() {
               {kost.alamat}
             </div>
             <div className="flex items-center gap-1 mt-1 flex-wrap">
-              {kost.fasilitas
-                .filter((f) => fasilitasIcons[f.nama_fasilitas])
-                .map((f, idx) => {
-                  const Icon = fasilitasIcons[f.nama_fasilitas];
-                  return <Icon key={idx} className="w-4 h-4" title={f.nama_fasilitas} />;
-                })}
+              {Object.entries(iconKategori).map(([kategori, listFasilitas]) => {
+                const fasilitasTerpakai = listFasilitas.find((nama) =>
+                  kost.fasilitas.some((f) => f.nama_fasilitas === nama)
+                );
+
+                if (!fasilitasTerpakai) return null;
+
+                const Icon = fasilitasIcons[fasilitasTerpakai];
+
+                return (
+                  <Icon
+                    key={kategori}
+                    className="w-4 h-4"
+                    title={fasilitasTerpakai}
+                  />
+                );
+              })}
             </div>
+
             <div className="text-xs mt-1 flex">
-              <div className="font-semibold">Rp{parseInt(kost.harga_sewa).toLocaleString('id-ID')}</div>
+              <div className="font-semibold">
+                Rp{parseInt(kost.harga_sewa).toLocaleString("id-ID")}
+              </div>
               <span className="ml-1"> /bulan</span>
             </div>
           </div>
