@@ -46,10 +46,10 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100 font-poppins">
-      <div className="bg-white shadow-lg rounded-lg p-8 flex w-3/4 max-w-4xl">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100 font-poppins p-4">
+      <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col md:flex-row w-full max-w-4xl">
         {/* Form Section */}
-        <div className="w-1/2 p-8 flex flex-col justify-center">
+        <div className="w-full md:w-1/2 p-4 flex flex-col justify-center">
           <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
           <form onSubmit={handleLogin}>
             <div className="mb-4 flex items-center border rounded-md px-4 py-2 focus-within:ring-2 focus-within:ring-blue-400">
@@ -82,8 +82,8 @@ function LoginPage() {
         </div>
 
         {/* Illustration Section */}
-        <div className="w-1/2 flex items-center justify-center">
-          <img src={loginIllustration} alt="Login Illustration" className="max-w-full" />
+        <div className="w-full md:w-1/2 flex items-center justify-center mt-6 md:mt-0">
+          <img src={loginIllustration} alt="Login Illustration" className="max-w-full h-auto" />
         </div>
       </div>
 

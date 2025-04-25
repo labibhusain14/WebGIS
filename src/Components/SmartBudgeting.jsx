@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { MapPin, ChevronDown, X } from 'lucide-react';
+import { MapPin, ChevronDown, X, Search } from 'lucide-react';
 import PropTypes from 'prop-types';
-function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
+
+function SmartBudgeting({ budgetParams, setBudgetParams, fullAddress }) {
   const [predictionResult, setPredictionResult] = useState(null);
   const [kostList, setKostList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openFacilityGroup, setOpenFacilityGroup] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [addressInput, setAddressInput] = useState('');
+  const [isGeocodingLoading, setIsGeocodingLoading] = useState(false);
 
   const facilityGroups = {
     Premium: ['ac', 'air panas', 'cermin', 'kamar mandi dalam', 'kloset duduk', 'kulkas', 'kursi', 'meja', 'parkir mobil', 'shower', 'tv'],
@@ -74,6 +78,41 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
     }
   };
 
+  // Geocode address to coordinates
+  const geocodeAddress = async () => {
+    if (!addressInput.trim()) {
+      setErrorMsg('Please enter an address');
+      return;
+    }
+
+    try {
+      setIsGeocodingLoading(true);
+      setErrorMsg('');
+
+      // Use Nominatim OpenStreetMap API to geocode the address
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressInput)}`);
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+
+        // Update budget parameters with new coordinates
+        setBudgetParams((prev) => ({
+          ...prev,
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lon),
+        }));
+      } else {
+        setErrorMsg('Address not found. Please try a different address.');
+      }
+    } catch (error) {
+      console.error('Geocoding failed:', error);
+      setErrorMsg('Failed to convert address to coordinates. Please try again.');
+    } finally {
+      setIsGeocodingLoading(false);
+    }
+  };
+
   const predictPrice = async () => {
     try {
       setIsLoading(true);
@@ -118,6 +157,7 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
       console.error('Failed to fetch kost details:', error);
     }
   };
+
   const resultRef = useRef(null);
 
   useEffect(() => {
@@ -125,7 +165,6 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
       resultRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [predictionResult]);
-  const [errorMsg, setErrorMsg] = useState('');
 
   return (
     <div>
@@ -135,7 +174,32 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
 
         <div className="bg-gray-100 text-gray-700 text-xs rounded-md p-2 mb-2 flex items-center w-full">
           <span className="mr-2">📍</span>
-          <span>Klik titik di map untuk mengganti lokasi</span>
+          <span>Klik titik di map untuk mengganti lokasi atau masukkan alamat di bawah</span>
+        </div>
+
+        {/* Manual address input */}
+        <div className="mb-3">
+          <label className="block text-gray-600 mb-1 text-xs">Alamat (Manual)</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              className="border rounded-md p-2 flex-1 text-xs"
+              value={addressInput}
+              onChange={(e) => setAddressInput(e.target.value)}
+              placeholder="Contoh: Jalan Dipatiukur No. 35, Bandung"
+              onKeyPress={(e) => e.key === 'Enter' && geocodeAddress()}
+            />
+            <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md px-2 text-xs flex items-center" onClick={geocodeAddress} disabled={isGeocodingLoading}>
+              {isGeocodingLoading ? (
+                <svg className="animate-spin h-4 w-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+              ) : (
+                <Search size={14} />
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-3">
@@ -150,11 +214,11 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
         </div>
 
         <div>
-          {/* Kecamatan Display */}
-          {kecamatan && (
+          {/* fullAddress Display */}
+          {fullAddress && (
             <div className="flex items-center mb-2">
               <MapPin size={18} className="inline-block mr-1" />
-              <p className="block text-gray-600 mb-1 text-xs">{kecamatan}</p>
+              <p className="block text-gray-600 mb-1 text-xs">{fullAddress}</p>
             </div>
           )}
         </div>
@@ -280,7 +344,7 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
       )}
       {/* Recommendations */}
       {kostList.length > 0 && (
-        <>
+        <div className="pl-4">
           <h4 className="my-4 font-semibold">Recommendations</h4>
           <div className="flex overflow-x-auto space-x-4 pb-2">
             {kostList.map((kost, index) => (
@@ -304,13 +368,14 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 }
 
 export default SmartBudgeting;
+
 SmartBudgeting.propTypes = {
   budgetParams: PropTypes.shape({
     latitude: PropTypes.number.isRequired,
@@ -320,5 +385,5 @@ SmartBudgeting.propTypes = {
     fasilitas: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
   setBudgetParams: PropTypes.func.isRequired,
-  kecamatan: PropTypes.string,
+  fullAddress: PropTypes.string,
 };

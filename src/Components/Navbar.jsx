@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import { FiLogOut } from 'react-icons/fi'; // Icon logout
+import { FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import Logo from '../assets/Logo.png';
 
 const Navbar = () => {
@@ -17,11 +17,11 @@ const Navbar = () => {
 
   const [activeTab, setActiveTab] = useState('Beranda');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    // Deteksi tab aktif berdasarkan URL saat ini
     const currentPath = Object.entries(tabRoutes).find(([, path]) => path === location.pathname);
     if (currentPath) {
       setActiveTab(currentPath[0]);
@@ -31,10 +31,10 @@ const Navbar = () => {
   const handleNavigation = (name) => {
     setActiveTab(name);
     navigate(tabRoutes[name]);
-    setMobileMenuOpen(false);
+    setMobileMenuOpen(false); // close mobile menu after navigation
   };
+
   useEffect(() => {
-    // Tutup dropdown jika klik di luar elemen
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
@@ -69,52 +69,72 @@ const Navbar = () => {
       localStorage.removeItem('user');
       setLoading(false);
       navigate('/login');
-    }, 1500); // simulasi delay logout
+    }, 1500);
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between bg-white shadow-md p-3 font-poppins">
-      <div className="flex items-center font-bold text-gray-500">
-        <img src={Logo} alt="Logo" className="w-10 h-10 mr-2" />
-        <span className="text-lg">KOSTHUB</span>
-      </div>
-
-      <div className="flex gap-6">
-        {Object.keys(tabRoutes).map((name) => (
-          <button
-            key={name}
-            onClick={() => {
-              setActiveTab(name);
-              navigate(tabRoutes[name]);
-            }}
-            className={`text-base font-bold pb-1 border-b-2 ${activeTab === name ? 'text-blue-500 border-blue-500' : 'text-black border-transparent'}`}
-          >
-            {name}
-          </button>
-        ))}
-      </div>
-
-      <div className="relative flex items-center font-bold" ref={dropdownRef}>
-        <div className="text-base text-gray-600 cursor-pointer" onClick={() => setShowDropdown(!showDropdown)}>
-          {userName}
+    <nav className="fixed top-0 left-0 right-0 z-20 bg-white shadow-md p-3 font-poppins">
+      <div className="flex items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center font-bold text-gray-500">
+          <img src={Logo} alt="Logo" className="w-10 h-10 mr-2" />
+          <span className="text-lg">KOSTHUB</span>
         </div>
-        <img
-          src="https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D"
-          alt="Profile"
-          className="ml-3 mr-4 w-8 h-8 rounded-full object-cover aspect-square cursor-pointer"
-          onClick={() => setShowDropdown(!showDropdown)}
-        />
 
-        {/* Dropdown */}
-        {showDropdown && (
-          <div className="absolute right-0 mt-24 w-40 bg-white border rounded shadow-md z-20">
-            <button onClick={handleLogout} className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700" disabled={loading}>
-              {loading ? <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500" /> : <FiLogOut className="text-lg" />}
+        {/* Desktop Menu */}
+        <div className="hidden md:flex gap-6">
+          {Object.keys(tabRoutes).map((name) => (
+            <button key={name} onClick={() => handleNavigation(name)} className={`text-base font-bold pb-1 border-b-2 ${activeTab === name ? 'text-blue-500 border-blue-500' : 'text-black border-transparent'}`}>
+              {name}
+            </button>
+          ))}
+        </div>
+
+        {/* User Profile */}
+        <div className="relative flex items-center font-bold" ref={dropdownRef}>
+          <div className="hidden md:block text-base text-gray-600 cursor-pointer" onClick={() => setShowDropdown(!showDropdown)}>
+            {userName}
+          </div>
+          <img
+            src="https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D"
+            alt="Profile"
+            className="hidden md:block ml-3 mr-2 w-8 h-8 rounded-full object-cover aspect-square cursor-pointer"
+            onClick={() => setShowDropdown(!showDropdown)}
+          />
+
+          {showDropdown && (
+            <div className="absolute right-0 mt-24 w-40 bg-white border rounded shadow-md z-20">
+              <button onClick={handleLogout} className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700" disabled={loading}>
+                {loading ? <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500" /> : <FiLogOut className="text-lg" />}
+                {loading ? 'Logging out...' : 'Logout'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Hamburger Button */}
+        <button className="md:hidden text-2xl text-gray-600" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          {mobileMenuOpen ? <FiX /> : <FiMenu />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden mt-3 flex flex-col gap-3">
+          {Object.keys(tabRoutes).map((name) => (
+            <button key={name} onClick={() => handleNavigation(name)} className={`text-left font-semibold text-base ${activeTab === name ? 'text-blue-500' : 'text-gray-700'}`}>
+              {name}
+            </button>
+          ))}
+          <div className="mt-3 flex items-center gap-2">
+            <span className="text-gray-600">{userName}</span>
+            <button onClick={handleLogout} className="text-red-500 flex items-center gap-2 text-sm" disabled={loading}>
+              {loading ? <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-red-500" /> : <FiLogOut />}
               {loading ? 'Logging out...' : 'Logout'}
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 };

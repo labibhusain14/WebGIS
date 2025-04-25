@@ -4,6 +4,7 @@ import CardKost from './CardKost';
 import PropTypes from 'prop-types';
 function SideBar({
   isSidebarOpen,
+  toggleSidebar,
   originalKostList,
   setFilteredKost,
   filteredKost,
@@ -25,7 +26,7 @@ function SideBar({
   setSortOrder,
 }) {
   const sidebarRef = useRef(null);
-  const filters = ['Price', 'Facilities', 'Type'];
+  const filters = ['Price', 'Facilities'];
   const [openDropdown, setOpenDropdown] = useState(null);
 
   const facilitiesOptions = [
@@ -50,8 +51,6 @@ function SideBar({
     'Penjaga Kos',
     'TV',
   ];
-
-  const typeOptions = ['Laki-laki', 'Perempuan', 'Campur'];
 
   const toggleDropdown = (label) => {
     setOpenDropdown(openDropdown === label ? null : label);
@@ -100,8 +99,16 @@ function SideBar({
   return (
     <div
       ref={sidebarRef}
-      className={`fixed top-[64px] h-[calc(100vh-61px)] w-[450px] bg-gray-200 shadow-md transition-all duration-700 ${isSidebarOpen ? 'left-0' : '-translate-x-full'} flex flex-col items-center z-40 border-t border-gray-300 overflow-y-auto`}
+      className={`fixed top-[64px] h-[calc(100vh-61px)] w-full max-w-[450px] bg-gray-200 transition-all duration-700 ${
+        isSidebarOpen ? 'left-0' : '-translate-x-full'
+      } flex flex-col items-center z-40 border-t border-gray-300 overflow-y-auto`}
     >
+      <div className="w-full flex justify-start p-2 md:hidden">
+        <button onClick={toggleSidebar} className="text-gray-700 hover:text-red-600 text-xl font-bold px-2">
+          ✕
+        </button>
+      </div>
+
       <div className="flex justify-center bg-white m-5 rounded-lg p-2 shadow-md w-[80%]">
         <input type="text" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder-gray-400" />
         <Search className="w-4 h-4 text-gray-500 mx-2" />
@@ -173,17 +180,6 @@ function SideBar({
                       ))}
                     </div>
                   )}
-
-                  {label === 'Type' && (
-                    <div className="space-y-2">
-                      {typeOptions.map((item) => (
-                        <label key={item} className="flex items-center space-x-2">
-                          <input type="checkbox" checked={selectedType.includes(item)} onChange={() => handleCheckboxChange('Type', item)} className="w-4 h-4" />
-                          <span>{item}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
                 </div>
               )}
             </div>
@@ -200,6 +196,15 @@ function SideBar({
         </div>
       </div>
       <CardKost filteredKost={filteredKost} />
+      {/* Menampilkan animasi loading jika loading true */}
+      {loading ? (
+        <div className="flex justify-center items-center py-6">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-900 border-solid"></div>
+          <p className="ml-4 text-gray-700">Memuat data, mohon tunggu...</p>
+        </div>
+      ) : (
+        <CardKost filteredKost={filteredKost} />
+      )}
     </div>
   );
 }
@@ -207,6 +212,7 @@ function SideBar({
 export default SideBar;
 SideBar.propTypes = {
   isSidebarOpen: PropTypes.bool.isRequired,
+  toggleSidebar: PropTypes.func.isRequired,
   originalKostList: PropTypes.array.isRequired,
   setFilteredKost: PropTypes.func.isRequired,
   filteredKost: PropTypes.array.isRequired,

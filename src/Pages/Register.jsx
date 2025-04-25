@@ -3,6 +3,7 @@ import { FaUser, FaLock, FaEyeSlash, FaEye, FaEnvelope } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Regist from '../assets/regist.png';
+
 function RegisterPage() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -51,10 +52,15 @@ function RegisterPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100 font-poppins">
-      <div className="bg-white shadow-lg rounded-lg p-8 flex w-3/4 max-w-4xl">
+    <div className="flex flex-col md:flex-row h-auto md:h-screen items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100 font-poppins p-4">
+      <div className="bg-white shadow-lg rounded-lg p-4 md:p-8 flex flex-col md:flex-row w-full max-w-4xl gap-6">
+        {/* Illustration Section */}
+        <div className="w-full md:w-1/2 flex items-center justify-center">
+          <img src={Regist} alt="Register Illustration" className="w-full max-w-xs md:max-w-full h-auto" />
+        </div>
+
         {/* Form Section */}
-        <div className="w-1/2 p-8 flex flex-col justify-center">
+        <div className="w-full md:w-1/2 flex flex-col justify-center">
           <h2 className="text-2xl font-bold mb-3 text-center">Sign Up</h2>
           <p className="text-sm text-center text-gray-500 mb-8">Signup your free account with us</p>
           <form onSubmit={handleRegister}>
@@ -94,15 +100,10 @@ function RegisterPage() {
                 Sign in
               </a>
             </p>
-            <button type="submit" className="w-full bg-blue-500 text-white py-3 mt-3 rounded-lg hover:bg-blue-600 transition">
+            <button type="submit" className="w-full bg-blue-500 text-white py-3 mt-4 rounded-lg hover:bg-blue-600 transition">
               Sign Up
             </button>
           </form>
-        </div>
-
-        {/* Illustration Section */}
-        <div className="w-1/2 flex items-center justify-center">
-          <img src={Regist} alt="Login Illustration" className="max-w-full" />
         </div>
       </div>
 

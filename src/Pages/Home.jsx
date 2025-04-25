@@ -1,48 +1,40 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Crosshair, Menu, Bot, X, History, Wallet, MessageCircle, Send, Mic } from 'lucide-react';
+import { Crosshair, Menu, Bot, X, History, Wallet, MessageCircle, MapPin } from 'lucide-react';
 import Navbar from '../Components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../Components/SideBar';
 import SmartBudgeting from '../Components/SmartBudgeting';
-function Maps() {
+import VirtualAssistant from '../Components/VirtualAssistant';
+import LoadingAnimation from '../Components/LoadingAnimation';
+
+function Home() {
   const MAP_SERVICE_KEY = import.meta.env.VITE_MAP_SERVICE_KEY;
   const mapContainer = useRef(null);
   const map = useRef(null);
   const markerRef = useRef(null);
-  // const [activeTab, setActiveTab] = useState("Beranda");
   const [userLocation, setUserLocation] = useState({
-    // Set default coordinates for Bandung
     latitude: -6.9175,
     longitude: 107.6191,
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const [isOpen, setIsOpen] = useState(false);
   const [activeAssistant, setActiveAssistant] = useState('assistant');
-
-  const [kecamatan, setKecamatan] = useState('');
-
+  const [fullAddress, setFullAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [originalKostList, setOriginalKostList] = useState([]);
-
   const [skip, setSkip] = useState(0);
   const [filteredKost, setFilteredKost] = useState([]);
   const markerList = useRef([]);
   const navigate = useNavigate();
   const sidebarRef = useRef(null);
-
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const chatEndRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedType, setSelectedType] = useState([]);
   const [sortOrder, setSortOrder] = useState('asc');
-  // Smart Budgeting state
   const [budgetParams, setBudgetParams] = useState({
     panjang: 4,
     lebar: 4,
@@ -50,95 +42,164 @@ function Maps() {
     latitude: -6.9175,
     longitude: 107.6191,
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const mapInitialized = useRef(false);
+  const initialDataFetched = useRef(false);
 
+  // Handle loading animation timer
   useEffect(() => {
-    if (!mapContainer.current) return;
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 4000);
 
-    // Use Bandung coordinates instead of getting user position
-    const latitude = -6.883316515;
-    const longitude = 107.616888;
+    return () => clearTimeout(timer);
+  }, []);
 
-    // Set user location to Bandung
-    setUserLocation({ latitude, longitude });
+  // Initialize map immediately, regardless of loading state
+  useEffect(() => {
+    if (!mapContainer.current || mapInitialized.current) return;
 
-    // Update budget parameters with Bandung location
-    setBudgetParams((prev) => ({
-      ...prev,
-      latitude,
-      longitude,
-    }));
+    const initializeMap = async () => {
+      console.log('Initializing map in background...');
+      mapInitialized.current = true;
 
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: `https://basemap.mapid.io/styles/street-new-generation/style.json?key=${MAP_SERVICE_KEY}`,
-      center: [longitude, latitude],
-      zoom: 13.5,
-      pitch: 60,
-    });
+      // Use Bandung coordinates
+      const latitude = -6.883316515;
+      const longitude = 107.616888;
 
-    map.current.on('click', async (e) => {
-      const coordinates = e.lngLat;
-      const latitude = coordinates.lat;
-      const longitude = coordinates.lng;
+      // Set user location to Bandung
+      setUserLocation({ latitude, longitude });
 
-      // Tambahkan marker
-      if (markerRef.current) {
-        markerRef.current.setLngLat(coordinates);
-      } else {
-        markerRef.current = new maplibregl.Marker({
-          color: 'red',
-          draggable: false,
-        })
-          .setLngLat(coordinates)
-          .addTo(map.current);
-      }
-
+      // Update budget parameters with Bandung location
       setBudgetParams((prev) => ({
         ...prev,
         latitude,
         longitude,
       }));
 
-      try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-        const data = await response.json();
-        const address = data.address;
-
-        const fullAddress = [address.road, address.suburb || address.village || address.town || address.city_district || address.county, address.city || address.regency, address.state, address.postcode, address.country]
-          .filter(Boolean)
-          .join(', ');
-
-        setKecamatan(fullAddress);
-      } catch (err) {
-        console.error('Gagal ambil alamat lengkap:', err);
-      }
-    });
-
-    map.current.on('load', () => {
-      markerRef.current = new maplibregl.Marker({
-        color: 'red',
-        draggable: false,
-      })
-        .setLngLat([longitude, latitude])
-        .addTo(map.current);
-
-      const nav = new maplibregl.NavigationControl({
-        showCompass: true,
-        showZoom: true,
-        visualizePitch: true,
-        visualizeRoll: true,
+      map.current = new maplibregl.Map({
+        container: mapContainer.current,
+        style: `https://basemap.mapid.io/styles/street-new-generation/style.json?key=${MAP_SERVICE_KEY}`,
+        center: [longitude, latitude],
+        zoom: 15.5,
+        pitch: 60,
       });
-      map.current.addControl(nav, 'bottom-right');
 
-      fetchDataKost();
-    });
+      map.current.on('click', async (e) => {
+        const coordinates = e.lngLat;
+        const latitude = coordinates.lat;
+        const longitude = coordinates.lng;
+
+        // Add marker
+        if (markerRef.current) {
+          markerRef.current.setLngLat(coordinates);
+        } else {
+          markerRef.current = new maplibregl.Marker({
+            color: 'red',
+            draggable: false,
+          })
+            .setLngLat(coordinates)
+            .addTo(map.current);
+        }
+
+        setBudgetParams((prev) => ({
+          ...prev,
+          latitude,
+          longitude,
+        }));
+
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          const address = data.address;
+
+          const fullAddressText = [address.road, address.suburb || address.village || address.town || address.city_district || address.county, address.city || address.regency, address.state, address.postcode, address.country]
+            .filter(Boolean)
+            .join(', ');
+
+          setFullAddress(fullAddressText);
+        } catch (err) {
+          console.error('Gagal ambil alamat lengkap:', err);
+        }
+      });
+
+      // Wait for map to load, then fetch data
+      map.current.on('load', () => {
+        console.log('Map loaded, adding initial marker');
+        markerRef.current = new maplibregl.Marker({
+          color: 'red',
+          draggable: false,
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map.current);
+
+        const nav = new maplibregl.NavigationControl({
+          showCompass: true,
+          showZoom: true,
+          visualizePitch: true,
+          visualizeRoll: true,
+        });
+        map.current.addControl(nav, 'bottom-right');
+
+        // Fetch initial data if not already fetched
+        if (!initialDataFetched.current) {
+          fetchDataKost();
+        }
+
+        // Get initial full address
+        fetchAddressFromCoordinates(latitude, longitude);
+      });
+    };
+
+    initializeMap();
 
     return () => {
       if (map.current) {
         map.current.remove();
       }
     };
-  }, [MAP_SERVICE_KEY]);
+  }, [MAP_SERVICE_KEY]); // Removed isLoading dependency to start immediately
+
+  // Function to fetch address from coordinates
+  const fetchAddressFromCoordinates = async (latitude, longitude) => {
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+      const data = await response.json();
+      const address = data.address;
+
+      const fullAddressText = [address.road, address.suburb || address.village || address.town || address.city_district || address.county, address.city || address.regency, address.state, address.postcode, address.country]
+        .filter(Boolean)
+        .join(', ');
+
+      setFullAddress(fullAddressText);
+    } catch (err) {
+      console.error('Gagal ambil alamat lengkap:', err);
+    }
+  };
+
+  // Effect to sync marker position with budgetParams
+  useEffect(() => {
+    if (map.current && markerRef.current && budgetParams.latitude && budgetParams.longitude) {
+      markerRef.current.setLngLat([budgetParams.longitude, budgetParams.latitude]);
+
+      // If the map is zoomed out too far, zoom in a bit
+      if (map.current.getZoom() < 10) {
+        map.current.flyTo({
+          center: [budgetParams.longitude, budgetParams.latitude],
+          zoom: 15,
+          speed: 1.5,
+        });
+      } else {
+        map.current.flyTo({
+          center: [budgetParams.longitude, budgetParams.latitude],
+          speed: 1.5,
+        });
+      }
+
+      // Update the address when coordinates change
+      fetchAddressFromCoordinates(budgetParams.latitude, budgetParams.longitude);
+    }
+  }, [budgetParams.latitude, budgetParams.longitude]);
 
   const applyFiltersAndSearch = (list) => {
     const filtered = list.filter((kost) => {
@@ -156,8 +217,17 @@ function Maps() {
     markerList.current.forEach((marker) => marker.remove());
     markerList.current = [];
   };
+
   const addMarkersToMap = (kostData) => {
     if (!map.current) return;
+
+    // If we're still loading, just store the data but don't actually add markers yet
+    if (isLoading) {
+      console.log('Map ready but still loading, storing marker data for later');
+      return;
+    }
+
+    console.log('Adding markers to map:', kostData.length);
     clearMarkers();
 
     kostData.forEach((kost) => {
@@ -194,13 +264,17 @@ function Maps() {
       }
     });
   };
+
   const fetchDataKost = async (reset = false) => {
     if (loading || (!hasMore && !reset)) return;
+
     setLoading(true);
+    console.log('Fetching kost data in background...');
+    initialDataFetched.current = true;
 
     const queryParams = new URLSearchParams({
       skip: reset ? 0 : skip,
-      limit: 20,
+      limit: 1000,
       fetch_all: false,
     });
 
@@ -208,6 +282,7 @@ function Maps() {
       const res = await fetch(`https://ggnt.mapid.co.id/api/kost/?${queryParams}`);
       const json = await res.json();
       const data = json.data;
+      console.log('Data received:', data.length, 'items');
 
       const newData = reset ? data : [...originalKostList, ...data];
       const filtered = applyFiltersAndSearch(newData);
@@ -216,7 +291,11 @@ function Maps() {
       setFilteredKost(filtered);
       setSkip(reset ? 20 : skip + 20);
       setHasMore(data.length === 20);
-      addMarkersToMap(filtered);
+
+      // Only add markers if map is ready and we're not in loading state
+      if (map.current && !isLoading) {
+        addMarkersToMap(filtered);
+      }
     } catch (err) {
       console.error('Gagal mengambil data kost:', err);
     } finally {
@@ -224,11 +303,25 @@ function Maps() {
     }
   };
 
+  // Apply filters when they change
   useEffect(() => {
-    const filtered = applyFiltersAndSearch(originalKostList);
-    setFilteredKost(filtered);
-    addMarkersToMap(filtered);
-  }, [searchTerm, priceRange, selectedFacilities, selectedType, sortOrder]); // ← tambahkan sortOrder di sini
+    if (originalKostList.length > 0) {
+      const filtered = applyFiltersAndSearch(originalKostList);
+      setFilteredKost(filtered);
+
+      if (map.current && !isLoading) {
+        addMarkersToMap(filtered);
+      }
+    }
+  }, [searchTerm, priceRange, selectedFacilities, selectedType, sortOrder, isLoading]);
+
+  // When loading finishes, make sure we add markers that might have been waiting
+  useEffect(() => {
+    if (!isLoading && map.current && filteredKost.length > 0) {
+      console.log('Loading finished, displaying markers');
+      addMarkersToMap(filteredKost);
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     const sidebar = sidebarRef.current;
@@ -243,29 +336,7 @@ function Maps() {
     sidebar.addEventListener('scroll', handleScroll);
     return () => sidebar.removeEventListener('scroll', handleScroll);
   }, [skip, loading, hasMore]);
-  function formatMessageText(text) {
-    // Tambahkan newline di akhir agar paragraf terakhir tetap diproses
-    text = text.trim() + '\n\n';
 
-    // Bold (**text**)
-    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    // Bullet list (* text)
-    formatted = formatted.replace(/^\* (.*)$/gm, '<li>$1</li>');
-
-    // Bungkus semua <li> jadi satu <ul> (jika ada)
-    if (formatted.includes('<li>')) {
-      formatted = formatted.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
-    }
-
-    // Pisah paragraf dan beri jarak (mb-3)
-    formatted = formatted
-      .split(/\n{2,}/)
-      .map((p) => `<p class="mb-3">${p.trim().replace(/\n/g, '<br/>')}</p>`)
-      .join('');
-
-    return formatted;
-  }
   const navigateToTarget = () => {
     if (!map.current || !userLocation) {
       console.warn('Map instance or user location is missing');
@@ -284,35 +355,14 @@ function Maps() {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const sendMessage = () => {
-    if (input.trim() !== '') {
-      const userMessage = { text: input, sender: 'user' };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setInput('');
-
-      query({ question: input }).then(async (response) => {
-        console.log(response);
-        if (response) {
-          const botReply = {
-            text: response.text,
-            sender: 'bot',
-          };
-          setMessages((prevMessages) => [...prevMessages, botReply]);
-        }
-      });
-    }
-  };
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   return (
     <div className="relative h-screen">
+      {isLoading && <LoadingAnimation duration={4000} />}
       <Navbar />
-      {/* Sidebar */}
+
       <SideBar
         isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
         originalKostList={originalKostList}
         setFilteredKost={setFilteredKost}
         filteredKost={filteredKost}
@@ -331,20 +381,31 @@ function Maps() {
         setSelectedType={setSelectedType}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
+        ref={sidebarRef}
       />
 
       <button onClick={toggleSidebar} className={`fixed top-[75px] transition-all duration-700 ${isSidebarOpen ? 'left-[450px]' : 'left-0'} bg-gray-800 text-white p-2 rounded-r-md z-10`}>
         <Menu className="w-5 h-5" />
       </button>
-      {/* Tombol Navigate */}
+
       <button onClick={navigateToTarget} className="absolute bottom-[150px] right-2 z-10 flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-md border-none cursor-pointer">
         <Crosshair className="w-4 h-4 text-gray-700" />
       </button>
 
-      <div className="fixed bottom-6 right-6 flex flex-col items-end z-10">
+      {/* Full Address Display */}
+      {fullAddress && (
+        <div className="absolute bottom-[90px] left-2 right-2 z-10 bg-white bg-opacity-90 rounded-lg shadow-md px-3 py-2 w-[90%] max-w-md mx-auto sm:left-4 sm:right-4 sm:w-auto">
+          <div className="flex items-center text-xs sm:text-sm">
+            <MapPin size={16} className="mr-1 text-gray-700" />
+            <span className="font-medium text-gray-800">Alamat Lengkap:</span>
+            <span className="ml-1 text-gray-600 truncate">{fullAddress}</span>
+          </div>
+        </div>
+      )}
+
+      <div className="fixed top-20 right-6 sm:top-40 sm:right-14 flex flex-col items-end z-10 sm:items-start sm:top-40 sm:right-14">
         {isOpen && (
-          <div className="w-[450px] h-[500px] bg-[#ECF0F1] shadow-lg rounded-lg flex flex-col fixed bottom-10 right-14 z-50 border border-gray-300">
-            {/* Header */}
+          <div className="w-[90%] max-w-[450px] h-[90vh] max-h-[500px] bg-[#ECF0F1] shadow-lg rounded-lg flex flex-col fixed top-40 sm:right-14 z-50 border border-gray-300 sm:w-[450px] sm:h-[500px] sm:max-h-[500px] sm:max-w-[450px] sm:top-40 sm:right-14">
             <div className="flex justify-between items-center bg-[#2C3E50] text-white p-2 rounded-t-lg">
               <div className="flex space-x-2">
                 <button className="p-2 rounded-full hover:bg-gray-700">
@@ -366,78 +427,25 @@ function Maps() {
               </div>
             </div>
 
-            {/* Content */}
-            <div className="flex-1 p-4 overflow-auto text-sm text-gray-700 flex flex-col space-y-2">
-              {activeAssistant === 'assistant' ? (
-                <div className="flex flex-col space-y-3">
-                  {messages.map((msg, index) => (
-                    <div key={index} className={`p-3 rounded-lg max-w-sm whitespace-pre-line ${msg.sender === 'bot' ? 'bg-gray-200 self-start text-gray-900' : 'bg-[#2C3E50] text-white self-end'}`}>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: formatMessageText(msg.text),
-                        }}
-                      />{' '}
-                    </div>
-                  ))}
-                  <div ref={chatEndRef} />
-                </div>
-              ) : (
-                <SmartBudgeting budgetParams={budgetParams} setBudgetParams={setBudgetParams} kecamatan={kecamatan} />
-              )}
-            </div>
-
-            {/* Input Field */}
-            {activeAssistant === 'assistant' && (
-              <div className="flex items-center p-3 border-t bg-gray-800 rounded-b-lg">
-                <input
-                  type="text"
-                  className="flex-1 p-2 border rounded-full text-sm focus:outline-none bg-gray-700 text-white placeholder-gray-400"
-                  placeholder="Ask anything..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                />
-                <button className="ml-2 p-2 bg-white text-gray-800 rounded-full hover:bg-gray-300">
-                  <Mic size={18} />
-                </button>
-                <button onClick={sendMessage} className="ml-2 p-2 bg-white text-gray-800 rounded-full hover:bg-gray-300">
-                  <Send size={18} />
-                </button>
-              </div>
-            )}
+            <div className="flex-1 overflow-auto">{activeAssistant === 'assistant' ? <VirtualAssistant /> : <SmartBudgeting budgetParams={budgetParams} setBudgetParams={setBudgetParams} fullAddress={fullAddress} />}</div>
           </div>
         )}
       </div>
+
       <div className="fixed top-24 right-2 z-50 flex items-center space-x-2">
-        {/* Tooltip */}
-        <div className="relative bg-gray-800 text-white text-xs p-2 rounded-md max-w-xs">
-          {/* Tooltip Text */}
+        <div className="relative bg-gray-800 text-white text-xs p-2 rounded-md max-w-xs hidden sm:block">
           Try AI Features
-          {/* Runcing di sebelah kanan */}
           <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-8 border-t-8 border-b-8 border-transparent border-l-gray-800"></div>
         </div>
 
-        {/* Button */}
         <button onClick={() => setIsOpen(!isOpen)} className="flex items-center space-x-2 bg-[#2C3E50] text-white px-3 py-3 rounded-full shadow-md hover:bg-[#1F2A36]">
           <Bot size={18} />
         </button>
       </div>
 
-      {/* Container Peta */}
       <div ref={mapContainer} className="flex-1 h-screen" />
     </div>
   );
 }
 
-async function query(data) {
-  const response = await fetch('http://localhost:3000/api/v1/prediction/c5ed765f-cd94-4587-850c-4a5719c0506a', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-  const result = await response.json();
-  return result;
-}
-export default Maps;
+export default Home;

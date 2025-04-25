@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Mic, Send } from 'lucide-react';
-
+import PropTypes from 'prop-types';
 function VirtualAssistant() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [enable] = useState(false); // State to control service availability
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -16,40 +17,39 @@ function VirtualAssistant() {
       setMessages((prevMessages) => [...prevMessages, userMessage]);
       setInput('');
 
-      query({ question: input }).then(async (response) => {
-        console.log(response);
-        if (response) {
-          const botReply = {
-            text: response.text,
-            sender: 'bot',
-          };
-          setMessages((prevMessages) => [...prevMessages, botReply]);
-        }
-      });
+      // If service is not enabled, send a default "coming soon" message
+      if (!enable) {
+        const botReply = {
+          text: 'Our service is coming soon. Stay tuned!',
+          sender: 'bot',
+        };
+        setMessages((prevMessages) => [...prevMessages, botReply]);
+      } else {
+        query({ question: input }).then(async (response) => {
+          console.log(response);
+          if (response) {
+            const botReply = {
+              text: response.text,
+              sender: 'bot',
+            };
+            setMessages((prevMessages) => [...prevMessages, botReply]);
+          }
+        });
+      }
     }
   };
 
   function formatMessageText(text) {
-    // Tambahkan newline di akhir agar paragraf terakhir tetap diproses
     text = text.trim() + '\n\n';
-
-    // Bold (**text**)
     let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    // Bullet list (* text)
     formatted = formatted.replace(/^\* (.*)$/gm, '<li>$1</li>');
-
-    // Bungkus semua <li> jadi satu <ul> (jika ada)
     if (formatted.includes('<li>')) {
       formatted = formatted.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
     }
-
-    // Pisah paragraf dan beri jarak (mb-3)
     formatted = formatted
       .split(/\n{2,}/)
       .map((p) => `<p class="mb-3">${p.trim().replace(/\n/g, '<br/>')}</p>`)
       .join('');
-
     return formatted;
   }
 
@@ -103,5 +103,9 @@ async function query(data) {
   const result = await response.json();
   return result;
 }
+VirtualAssistant.propTypes = {
+  enable: PropTypes.bool.isRequired,
+  setEnable: PropTypes.func,
+};
 
 export default VirtualAssistant;
