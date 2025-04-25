@@ -1,7 +1,7 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
-import { FiLogOut } from "react-icons/fi"; // Icon logout
-import Logo from "../assets/Logo.png";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { FiLogOut } from 'react-icons/fi'; // Icon logout
+import Logo from '../assets/Logo.png';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -9,22 +9,20 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
 
   const tabRoutes = {
-    Beranda: "/home",
-    "Market Intelligence": "/dashboard",
-    "Pusat Bantuan": "/pusat-bantuan",
-    "About Us": "/about",
+    Beranda: '/home',
+    'Market Intelligence': '/dashboard',
+    'Pusat Bantuan': '/pusat-bantuan',
+    'About Us': '/about',
   };
 
-  const [activeTab, setActiveTab] = useState("Beranda");
+  const [activeTab, setActiveTab] = useState('Beranda');
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     // Deteksi tab aktif berdasarkan URL saat ini
-    const currentPath = Object.entries(tabRoutes).find(
-      ([, path]) => path === location.pathname
-    );
+    const currentPath = Object.entries(tabRoutes).find(([, path]) => path === location.pathname);
     if (currentPath) {
       setActiveTab(currentPath[0]);
     }
@@ -42,9 +40,9 @@ const Navbar = () => {
         setShowDropdown(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -52,25 +50,25 @@ const Navbar = () => {
     const toTitleCase = (str) => {
       return str
         .toLowerCase()
-        .split(" ")
+        .split(' ')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+        .join(' ');
     };
 
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      setUserName(toTitleCase(parsedUser.nama || "Pengguna"));
+      setUserName(toTitleCase(parsedUser.nama || 'Pengguna'));
     }
   }, []);
 
   const handleLogout = () => {
     setLoading(true);
     setTimeout(() => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       setLoading(false);
-      navigate("/login");
+      navigate('/login');
     }, 1500); // simulasi delay logout
   };
 
@@ -89,11 +87,7 @@ const Navbar = () => {
               setActiveTab(name);
               navigate(tabRoutes[name]);
             }}
-            className={`text-base font-bold pb-1 border-b-2 ${
-              activeTab === name
-                ? "text-blue-500 border-blue-500"
-                : "text-black border-transparent"
-            }`}
+            className={`text-base font-bold pb-1 border-b-2 ${activeTab === name ? 'text-blue-500 border-blue-500' : 'text-black border-transparent'}`}
           >
             {name}
           </button>
@@ -101,10 +95,7 @@ const Navbar = () => {
       </div>
 
       <div className="relative flex items-center font-bold" ref={dropdownRef}>
-        <div
-          className="text-base text-gray-600 cursor-pointer"
-          onClick={() => setShowDropdown(!showDropdown)}
-        >
+        <div className="text-base text-gray-600 cursor-pointer" onClick={() => setShowDropdown(!showDropdown)}>
           {userName}
         </div>
         <img
@@ -117,17 +108,9 @@ const Navbar = () => {
         {/* Dropdown */}
         {showDropdown && (
           <div className="absolute right-0 mt-24 w-40 bg-white border rounded shadow-md z-20">
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700"
-              disabled={loading}
-            >
-              {loading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500" />
-              ) : (
-                <FiLogOut className="text-lg" />
-              )}
-              {loading ? "Logging out..." : "Logout"}
+            <button onClick={handleLogout} className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700" disabled={loading}>
+              {loading ? <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500" /> : <FiLogOut className="text-lg" />}
+              {loading ? 'Logging out...' : 'Logout'}
             </button>
           </div>
         )}

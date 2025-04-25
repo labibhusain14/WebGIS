@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MapPin, ChevronDown, X } from 'lucide-react';
 import PropTypes from 'prop-types';
 function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
@@ -95,6 +95,7 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
       }
     } catch (error) {
       console.error('Failed to predict price:', error);
+      setErrorMsg('Prediction failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -117,37 +118,37 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
       console.error('Failed to fetch kost details:', error);
     }
   };
+  const resultRef = useRef(null);
+
+  useEffect(() => {
+    if (predictionResult && resultRef.current) {
+      resultRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [predictionResult]);
+  const [errorMsg, setErrorMsg] = useState('');
 
   return (
     <div>
-      {/* Smart Budgeting Interface */}
-      {predictionResult && (
-        <div className="bg-white shadow-md rounded-xl flex items-center w-full mb-4">
-          <div className="shadow-md py-12 px-1 bg-green-400 rounded-l-md"></div>
-          <div className="ml-3 mb-2">
-            <p className="text-[#999696] text-sm font-bold mb-4">Estimated Budget</p>
-            <p className="text-2xl font-bold text-gray-900">
-              Rp
-              {predictionResult.prediksi_harga.toLocaleString('id-ID')} <span className="text-gray-500 text-2xl font-normal">/bulan</span>
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Parameter Input Form */}
       <div className="bg-white rounded-lg p-4 shadow-md mb-4">
         <h4 className="mb-3 font-semibold">Input Parameters</h4>
 
+        <div className="bg-gray-100 text-gray-700 text-xs rounded-md p-2 mb-2 flex items-center w-full">
+          <span className="mr-2">📍</span>
+          <span>Klik titik di map untuk mengganti lokasi</span>
+        </div>
+
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
             <label className="block text-gray-600 mb-1 text-xs">Latitude</label>
-            <input type="number" step="0.000001" className="border rounded-md p-2 w-full text-xs" value={budgetParams.latitude} onChange={(e) => handleBudgetParamChange('latitude', parseFloat(e.target.value))} />
+            <input type="number" step="0.000001" className="border rounded-md p-2 w-full text-xs bg-gray-100 cursor-not-allowed" value={budgetParams.latitude} readOnly />
           </div>
           <div>
             <label className="block text-gray-600 mb-1 text-xs">Longitude</label>
-            <input type="number" step="0.000001" className="border rounded-md p-2 w-full text-xs" value={budgetParams.longitude} onChange={(e) => handleBudgetParamChange('longitude', parseFloat(e.target.value))} />
+            <input type="number" step="0.000001" className="border rounded-md p-2 w-full text-xs bg-gray-100 cursor-not-allowed" value={budgetParams.longitude} readOnly />
           </div>
         </div>
+
         <div>
           {/* Kecamatan Display */}
           {kecamatan && (
@@ -252,11 +253,31 @@ function SmartBudgeting({ budgetParams, setBudgetParams, kecamatan }) {
           </button>
         </div>
 
-        <button onClick={predictPrice} disabled={isLoading} className="w-full bg-[#2C3E50] text-white py-2 rounded-md hover:bg-[#1F2A36] transition text-sm">
+        <button onClick={predictPrice} disabled={isLoading} className="w-full bg-[#2C3E50] text-white py-2 rounded-md hover:bg-[#1F2A36] transition text-sm flex justify-center items-center">
+          {isLoading ? (
+            <svg className="animate-spin h-4 w-4 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+          ) : null}
           {isLoading ? 'Processing...' : 'Predict Price'}
         </button>
+        {errorMsg && <div className="text-red-500 text-xs mt-2 text-center">{errorMsg}</div>}
       </div>
-
+      {/* Result */}
+      {/* Smart Budgeting Interface */}
+      {predictionResult && (
+        <div ref={resultRef} className="bg-white shadow-md rounded-xl flex items-center w-full mb-4">
+          <div className="shadow-md py-12 px-1 bg-green-400 rounded-l-md"></div>
+          <div className="ml-3 mb-2">
+            <p className="text-[#999696] text-sm font-bold mb-4">Estimated Budget</p>
+            <p className="text-2xl font-bold text-gray-900">
+              Rp
+              {predictionResult.prediksi_harga.toLocaleString('id-ID')} <span className="text-gray-500 text-2xl font-normal">/bulan</span>
+            </p>
+          </div>
+        </div>
+      )}
       {/* Recommendations */}
       {kostList.length > 0 && (
         <>

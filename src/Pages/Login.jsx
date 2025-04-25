@@ -38,7 +38,7 @@ function LoginPage() {
       setTimeout(() => {
         window.location.href = '/home';
       }, 1500);
-    } catch (error) {
+    } catch {
       toast.error('Email atau password salah!', {
         position: 'top-center',
       });

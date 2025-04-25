@@ -1,17 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Crosshair, Menu, ChevronDown, Search, Bot, X, History, Wallet, MessageCircle, Send, Mic, MapPin, SortAsc, SortDesc } from 'lucide-react';
+import { Crosshair, Menu, Bot, X, History, Wallet, MessageCircle, Send, Mic } from 'lucide-react';
 import Navbar from '../Components/Navbar';
-import CardKost from '../Components/CardKost';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../Components/SideBar';
 import SmartBudgeting from '../Components/SmartBudgeting';
-// import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js";
-// Chatbot.init({
-//   chatflowid: "c5ed765f-cd94-4587-850c-4a5719c0506a",
-//   apiHost: "http://localhost:3000",
-// });
 function Maps() {
   const MAP_SERVICE_KEY = import.meta.env.VITE_MAP_SERVICE_KEY;
   const mapContainer = useRef(null);
@@ -57,51 +51,12 @@ function Maps() {
     longitude: 107.6191,
   });
 
-  const facilityGroups = {
-    Premium: ['ac', 'air panas', 'cermin', 'kamar mandi dalam', 'kloset duduk', 'kulkas', 'kursi', 'meja', 'parkir mobil', 'shower', 'tv'],
-    'Non-Premium': ['bak mandi', 'ember mandi', 'jemuran', 'kamar mandi luar', 'kloset jongkok', 'locker', 'microwave', 'parkir motor', 'rice cooker', 'taman', 'termasuk listrik'],
-    Netral: [
-      'bantal',
-      'bathtub',
-      'cctv',
-      'cleaning service',
-      'dapur',
-      'dispenser',
-      'guling',
-      'kartu akses',
-      'kasur',
-      'kipas angin',
-      'laundry',
-      'lemari baju',
-      'meja makan',
-      'mushola',
-      'parkir sepeda',
-      'penjaga kos',
-      'ruang santai',
-      'sofa',
-      'wastafel',
-      'wifi',
-    ],
-    'Kamar Mandi': ['shower', 'kloset duduk', 'bathtub', 'wastafel', 'bak mandi', 'ember mandi', 'kloset jongkok', 'kamar mandi dalam', 'kamar mandi luar'],
-    Keamanan: ['cctv', 'kartu akses', 'penjaga kos'],
-    'Fasilitas Bersama': ['ruang santai', 'dapur', 'mushola', 'taman', 'jemuran', 'laundry'],
-    Parkir: ['parkir mobil', 'parkir motor', 'parkir sepeda'],
-    Elektronik: ['ac', 'tv', 'kulkas', 'dispenser', 'rice cooker', 'microwave', 'kipas angin'],
-    Utilitas: ['wifi', 'termasuk listrik', 'cleaning service'],
-  };
-
-  const [openFacilityGroup, setOpenFacilityGroup] = useState(null);
-
-  const [predictionResult, setPredictionResult] = useState(null);
-  const [kostList, setKostList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     if (!mapContainer.current) return;
 
     // Use Bandung coordinates instead of getting user position
-    const latitude = -6.9175;
-    const longitude = 107.6191;
+    const latitude = -6.883316515;
+    const longitude = 107.616888;
 
     // Set user location to Bandung
     setUserLocation({ latitude, longitude });
@@ -117,7 +72,7 @@ function Maps() {
       container: mapContainer.current,
       style: `https://basemap.mapid.io/styles/street-new-generation/style.json?key=${MAP_SERVICE_KEY}`,
       center: [longitude, latitude],
-      zoom: 15.5,
+      zoom: 13.5,
       pitch: 60,
     });
 
@@ -147,10 +102,15 @@ function Maps() {
       try {
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
         const data = await response.json();
-        const kecamatan = data.address.suburb || data.address.village || data.address.town || data.address.city_district || data.address.county;
-        setKecamatan(kecamatan);
+        const address = data.address;
+
+        const fullAddress = [address.road, address.suburb || address.village || address.town || address.city_district || address.county, address.city || address.regency, address.state, address.postcode, address.country]
+          .filter(Boolean)
+          .join(', ');
+
+        setKecamatan(fullAddress);
       } catch (err) {
-        console.error('Gagal ambil nama kota:', err);
+        console.error('Gagal ambil alamat lengkap:', err);
       }
     });
 
@@ -343,84 +303,6 @@ function Maps() {
     }
   };
 
-  // Handle changes in budgeting parameters
-  const handleBudgetParamChange = (field, value) => {
-    if (field === 'fasilitas') {
-      setBudgetParams((prev) => {
-        const newFasilitas = prev.fasilitas.includes(value) ? prev.fasilitas.filter((item) => item !== value) : [...prev.fasilitas, value];
-
-        return {
-          ...prev,
-          fasilitas: newFasilitas,
-        };
-      });
-    } else if (field === 'panjang' || field === 'lebar') {
-      // Allow empty string when input is cleared
-      if (value === '') {
-        setBudgetParams((prev) => ({
-          ...prev,
-          [field]: '', // or null, depending on your preference
-        }));
-      } else {
-        // Convert to number and ensure non-negative
-        const numValue = Math.max(0, Number(value));
-        setBudgetParams((prev) => ({
-          ...prev,
-          [field]: numValue,
-        }));
-      }
-    } else {
-      setBudgetParams((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
-  };
-
-  const predictPrice = async () => {
-    try {
-      setIsLoading(true);
-
-      const response = await fetch('https://ggnt.mapid.co.id/api/predict/price', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(budgetParams),
-      });
-
-      const result = await response.json();
-      console.log('Prediction result:', result);
-      setPredictionResult(result);
-
-      if (result.id && result.id.length > 0) {
-        fetchRecommendedKosts(result.id);
-      }
-    } catch (error) {
-      console.error('Failed to predict price:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchRecommendedKosts = async (ids) => {
-    try {
-      const kostDetails = [];
-
-      for (const id of ids) {
-        const response = await fetch(`https://ggnt.mapid.co.id/api/kost/${id}`);
-        const data = await response.json();
-        if (data) {
-          kostDetails.push(data);
-        }
-      }
-
-      setKostList(kostDetails);
-    } catch (error) {
-      console.error('Failed to fetch kost details:', error);
-    }
-  };
-
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -526,11 +408,21 @@ function Maps() {
           </div>
         )}
       </div>
-      <div className="fixed top-24 right-2 z-50">
+      <div className="fixed top-24 right-2 z-50 flex items-center space-x-2">
+        {/* Tooltip */}
+        <div className="relative bg-gray-800 text-white text-xs p-2 rounded-md max-w-xs">
+          {/* Tooltip Text */}
+          Try AI Features
+          {/* Runcing di sebelah kanan */}
+          <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-8 border-t-8 border-b-8 border-transparent border-l-gray-800"></div>
+        </div>
+
+        {/* Button */}
         <button onClick={() => setIsOpen(!isOpen)} className="flex items-center space-x-2 bg-[#2C3E50] text-white px-3 py-3 rounded-full shadow-md hover:bg-[#1F2A36]">
           <Bot size={18} />
         </button>
       </div>
+
       {/* Container Peta */}
       <div ref={mapContainer} className="flex-1 h-screen" />
     </div>
