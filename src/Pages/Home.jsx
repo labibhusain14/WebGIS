@@ -253,6 +253,25 @@ function Home() {
 
         const marker = new maplibregl.Marker({ color: '#8e44ad' }).setLngLat([kost.longitude, kost.latitude]).setPopup(popup).addTo(map.current);
 
+        // Get the marker element
+        const markerElement = marker.getElement();
+
+        // Add mouseenter event to show popup on hover
+        markerElement.addEventListener('mouseenter', () => {
+          marker.togglePopup();
+        });
+
+        // Add mouseleave event to hide popup when not hovering
+        markerElement.addEventListener('mouseleave', () => {
+          // Only close if it was opened by hover (not by click)
+          // You might want to add a delay here to improve UX
+          setTimeout(() => {
+            if (marker.getPopup().isOpen()) {
+              marker.togglePopup();
+            }
+          }, 1000); // 300ms delay gives user time to move cursor to the popup
+        });
+
         popup.on('open', () => {
           const detailButton = document.getElementById(`detail-btn-${kost.id_kost}`);
           if (detailButton) {
@@ -274,7 +293,7 @@ function Home() {
 
     const queryParams = new URLSearchParams({
       skip: reset ? 0 : skip,
-      limit: 1000,
+      limit: 800,
       fetch_all: false,
     });
 
