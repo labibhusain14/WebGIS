@@ -20,7 +20,7 @@ function Home() {
 
   // Loading state
   const [isLoading, setIsLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [showToTop, setShowToTop] = useState(false);
