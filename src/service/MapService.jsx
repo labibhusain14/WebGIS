@@ -17,15 +17,16 @@ class MapService {
 
     const { latitude, longitude } = initialCoordinates;
     const defaultOptions = {
-      zoom: 15.5,
-      pitch: 60,
+      zoom: 14,
+      pitch: 45,
     };
 
     const mapOptions = { ...defaultOptions, ...options };
 
     const map = new maplibregl.Map({
       container,
-      style: `https://basemap.mapid.io/styles/street-new-generation/style.json?key=${apiKey}`,
+      // style: `https://basemap.mapid.io/styles/street-new-generation/style.json?key=${apiKey}`,
+      style: `https://basemap.mapid.io/styles/light/style.json?key=${apiKey}`,
       center: [longitude, latitude],
       zoom: mapOptions.zoom,
       pitch: mapOptions.pitch,
@@ -35,8 +36,8 @@ class MapService {
     const nav = new maplibregl.NavigationControl({
       showCompass: true,
       showZoom: true,
-      visualizePitch: true,
-      visualizeRoll: true,
+      visualizePitch: false,
+      visualizeRoll: false,
     });
     map.addControl(nav, 'bottom-right');
 
@@ -95,8 +96,8 @@ class MapService {
 
     const defaultOptions = {
       zoom: 16,
-      speed: 1.5,
-      curve: 1.2,
+      speed: 2.5,
+      curve: 0.8,
     };
 
     const flyOptions = { ...defaultOptions, ...options };
