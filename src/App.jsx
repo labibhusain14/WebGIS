@@ -13,6 +13,7 @@ import HelpCenterPage from './Pages/HelpCenter';
 import AboutUsPage from './Pages/AboutUs';
 import RegisterPage from './Pages/Register';
 import ProtectedLayout from './Pages/ProtectedLayout';
+import LandingPage from './Pages/Landing';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
       <Route path="/line" element={<Line />} />
       <Route path="/polygon" element={<Polygon />} />
       <Route path="/beranda" element={<Beranda />} />
+      <Route path="/landing" element={<LandingPage />} />
 
       <Route element={<ProtectedLayout />}>
         <Route path="/dashboard" element={<MarketIntelligenceDashboard />} />
