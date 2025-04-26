@@ -1,62 +1,61 @@
-// SmartBudgeting/AddressInput.jsx
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import PropTypes from 'prop-types';
 
 function AddressInput({ updateCoordinates, setErrorMsg }) {
-  const [addressInput, setAddressInput] = useState('');
-  const [isGeocodingLoading, setIsGeocodingLoading] = useState(false);
+  const [address, setAddress] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const geocodeAddress = async () => {
-    if (!addressInput.trim()) {
-      setErrorMsg('Please enter an address');
-      return;
-    }
+  const geocode = async () => {
+    if (!address.trim()) return setErrorMsg('Please enter an address');
 
     try {
-      setIsGeocodingLoading(true);
+      setLoading(true);
       setErrorMsg('');
 
-      // Use Nominatim OpenStreetMap API to geocode the address
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressInput)}`);
-      const data = await response.json();
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
+      const data = await res.json();
 
-      if (data && data.length > 0) {
+      if (data?.length) {
         const { lat, lon } = data[0];
-        updateCoordinates(lat, lon);
+        updateCoordinates(parseFloat(lat), parseFloat(lon));
+        setAddress('');
       } else {
         setErrorMsg('Address not found. Please try a different address.');
       }
-    } catch (error) {
-      console.error('Geocoding failed:', error);
+    } catch {
       setErrorMsg('Failed to convert address to coordinates. Please try again.');
     } finally {
-      setIsGeocodingLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="mb-3">
-      <label className="block text-gray-600 mb-1 text-xs">Alamat (Manual)</label>
+    <div className="mb-5">
+      <label className="block mb-2 text-sm font-medium text-gray-700">Alamat</label>
       <div className="flex gap-2">
-        <input
+        <motion.input
           type="text"
-          className="border rounded-md p-2 flex-1 text-xs"
-          value={addressInput}
-          onChange={(e) => setAddressInput(e.target.value)}
+          className="flex-1 rounded-lg border border-gray-300 p-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && geocode()}
           placeholder="Contoh: Jalan Dipatiukur No. 35, Bandung"
-          onKeyPress={(e) => e.key === 'Enter' && geocodeAddress()}
+          whileFocus={{ scale: 1.02 }}
         />
-        <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md px-2 text-xs flex items-center" onClick={geocodeAddress} disabled={isGeocodingLoading}>
-          {isGeocodingLoading ? (
-            <svg className="animate-spin h-4 w-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-            </svg>
+        <motion.button onClick={geocode} disabled={loading} className="flex items-center justify-center rounded-lg bg-blue-600 px-4 text-sm text-white transition-colors hover:bg-blue-700" whileTap={{ scale: 0.9 }}>
+          {loading ? (
+            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+              <svg className="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            </motion.div>
           ) : (
-            <Search size={14} />
+            <Search size={18} />
           )}
-        </button>
+        </motion.button>
       </div>
     </div>
   );

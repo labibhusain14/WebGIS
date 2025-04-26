@@ -1,7 +1,7 @@
 // SmartBudgeting/data/facilityGroups.js
 export const facilityGroups = {
   Premium: ['ac', 'air panas', 'cermin', 'kamar mandi dalam', 'kloset duduk', 'kulkas', 'kursi', 'meja', 'parkir mobil', 'shower', 'tv'],
-  'Non-Premium': ['bak mandi', 'ember mandi', 'jemuran', 'kamar mandi luar', 'kloset jongkok', 'locker', 'microwave', 'parkir motor', 'rice cooker', 'taman', 'termasuk listrik'],
+  'Non-Premium': ['bak mandi', 'ember mandi', 'jemuran', 'kamar mandi luar', 'kloset jongkok', 'locker', 'parkir motor', 'rice cooker', 'taman', 'termasuk listrik'],
   Netral: [
     'bantal',
     'bathtub',
