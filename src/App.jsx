@@ -28,11 +28,11 @@ function App() {
       <Route path="/line" element={<Line />} />
       <Route path="/polygon" element={<Polygon />} />
       <Route path="/beranda" element={<Beranda />} />
+      <Route path="/pusat-bantuan" element={<HelpCenterPage />} />
+      <Route path="/about" element={<AboutUsPage />} />
 
       <Route element={<ProtectedLayout />}>
         <Route path="/dashboard" element={<MarketIntelligenceDashboard />} />
-        <Route path="/pusat-bantuan" element={<HelpCenterPage />} />
-        <Route path="/about" element={<AboutUsPage />} />
         <Route path="/home" element={<Home />} />
         <Route path="/detail/:id" element={<DetailPage />} />
       </Route>
