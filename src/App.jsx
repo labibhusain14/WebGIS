@@ -28,7 +28,6 @@ function App() {
       <Route path="/line" element={<Line />} />
       <Route path="/polygon" element={<Polygon />} />
       <Route path="/beranda" element={<Beranda />} />
-      <Route path="/landing" element={<LandingPage />} />
 
       <Route element={<ProtectedLayout />}>
         <Route path="/dashboard" element={<MarketIntelligenceDashboard />} />

@@ -42,7 +42,7 @@ const Navbar = () => {
     const currentPath = Object.entries(tabRoutes).find(([, path]) => path === location.pathname);
     if (currentPath) {
       setActiveTab(currentPath[0]);
-    } else if (location.pathname === '/landing') {
+    } else if (location.pathname === '/') {
       setActiveTab('');
     }
   }, [location.pathname]);
@@ -51,7 +51,7 @@ const Navbar = () => {
     const targetRoute = tabRoutes[name];
     const restrictedRoutes = ['/home', '/dashboard'];
 
-    if (location.pathname === '/landing' && !isAuthenticated && restrictedRoutes.includes(targetRoute)) {
+    if (location.pathname === '/' && !isAuthenticated && restrictedRoutes.includes(targetRoute)) {
       navigate('/login');
     } else {
       setActiveTab(name);
@@ -96,7 +96,7 @@ const Navbar = () => {
     tap: { scale: 0.95, transition: { duration: 0.2 } },
   };
 
-  const isLandingPage = location.pathname === '/landing';
+  const isLandingPage = location.pathname === '/';
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-20 bg-white shadow-md p-3 font-poppins">
