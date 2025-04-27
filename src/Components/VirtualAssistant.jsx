@@ -162,26 +162,4 @@ function VirtualAssistant() {
   );
 }
 
-// Query function to interact with the server
-async function query(data) {
-  try {
-    const response = await fetch('http://localhost:3000/api/v1/prediction/c5ed765f-cd94-4587-850c-4a5719c0506a', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('API query failed:', error);
-    throw error;
-  }
-}
-
 export default VirtualAssistant;
