@@ -42,59 +42,6 @@ const ChartContainer = ({ title, icon, children }) => {
   );
 };
 
-export const PriceDistribution = ({ priceCategories }) => {
-  const [activeIndex, setActiveIndex] = useState(null);
-
-  const handleMouseEnter = (data, index) => {
-    setActiveIndex(index);
-  };
-
-  const handleMouseLeave = () => {
-    setActiveIndex(null);
-  };
-
-  const getBarFill = (index) => {
-    return index === activeIndex ? '#6C5CE7' : '#8884d8';
-  };
-
-  return (
-    <ChartContainer title="Distribusi Harga" icon="📈">
-      {priceCategories.length > 0 ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={priceCategories}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="category" tick={{ fontSize: 12 }} axisLine={{ stroke: '#e0e0e0' }} />
-            <YAxis tick={{ fontSize: 12 }} axisLine={{ stroke: '#e0e0e0' }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                borderRadius: 8,
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                border: 'none',
-              }}
-            />
-            <Bar dataKey="count" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} animationDuration={1500}>
-              {priceCategories.map((entry, index) => (
-                <motion.rect
-                  key={`cell-${index}`}
-                  fill={getBarFill(index)}
-                  animate={{
-                    fill: getBarFill(index),
-                    y: activeIndex === index ? -5 : 0,
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      ) : (
-        <p className="text-gray-500 text-center py-8">Tidak ada data untuk ditampilkan.</p>
-      )}
-    </ChartContainer>
-  );
-};
-
 export const PriceCategories = ({ priceCategories }) => {
   return (
     <ChartContainer title="Kategori Harga" icon="🏷️">
