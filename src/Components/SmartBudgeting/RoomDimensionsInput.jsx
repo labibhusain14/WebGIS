@@ -1,15 +1,29 @@
+// SmartBudgeting/RoomDimensionsInput.jsx
+import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 function RoomDimensionsInput({ panjang, lebar, onChange }) {
   return (
-    <div className="grid grid-cols-2 gap-3 mb-3">
-      <div>
-        <label className="block text-gray-600 mb-1 text-xs">Panjang (m)</label>
-        <input type="number" className="border rounded-md p-2 w-full text-xs" value={panjang} onChange={(e) => onChange('panjang', e.target.value)} />
+    <div className="grid grid-cols-2 gap-4 mb-5">
+      <div className="flex flex-col">
+        <label className="text-gray-700 text-sm font-medium mb-1">Panjang (m)</label>
+        <motion.input
+          type="number"
+          className="border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-lg p-2 text-sm transition-all duration-300"
+          value={panjang}
+          onChange={(e) => onChange('panjang', e.target.value)}
+          whileFocus={{ scale: 1.02 }}
+        />
       </div>
-      <div>
-        <label className="block text-gray-600 mb-1 text-xs">Lebar (m)</label>
-        <input type="number" className="border rounded-md p-2 w-full text-xs" value={lebar} onChange={(e) => onChange('lebar', e.target.value)} />
+      <div className="flex flex-col">
+        <label className="text-gray-700 text-sm font-medium mb-1">Lebar (m)</label>
+        <motion.input
+          type="number"
+          className="border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-lg p-2 text-sm transition-all duration-300"
+          value={lebar}
+          onChange={(e) => onChange('lebar', e.target.value)}
+          whileFocus={{ scale: 1.02 }}
+        />
       </div>
     </div>
   );

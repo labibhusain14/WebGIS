@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import { FiLogOut, FiMenu, FiX } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import { FiLogOut, FiMenu, FiX, FiUser, FiChevronDown } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '../assets/Logo.png';
 
 const Navbar = () => {
@@ -22,7 +22,9 @@ const Navbar = () => {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
+  // Check authentication on mount
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -38,6 +40,7 @@ const Navbar = () => {
     }
   }, []);
 
+  // Set active tab based on current route
   useEffect(() => {
     const currentPath = Object.entries(tabRoutes).find(([, path]) => path === location.pathname);
     if (currentPath) {
@@ -72,6 +75,12 @@ const Navbar = () => {
     };
   }, []);
 
+  const handleNavigation = (name) => {
+    setActiveTab(name);
+    navigate(tabRoutes[name]);
+    setMobileMenuOpen(false);
+  };
+
   const handleLogout = () => {
     setLoading(true);
     setTimeout(() => {
@@ -96,31 +105,45 @@ const Navbar = () => {
     tap: { scale: 0.95, transition: { duration: 0.2 } },
   };
 
-  const isLandingPage = location.pathname === '/landing';
+  const buttonVariants = {
+    initial: { scale: 1 },
+    hover: {
+      scale: 1.03,
+      boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+      transition: { duration: 0.2 },
+    },
+    tap: {
+      scale: 0.97,
+      transition: { duration: 0.1 },
+    },
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-20 bg-white shadow-md p-3 font-poppins">
-      <div className="flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center font-bold text-gray-500">
-          <img src={Logo} alt="Logo" className="w-10 h-10 mr-2" />
-          <span className="text-lg">KOSTHUB</span>
-        </div>
+    <motion.nav className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-sm font-poppins transition-all duration-300`} variants={navbarVariants} initial="initial" animate={scrolled ? 'scrolled' : 'initial'}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <motion.div className="flex items-center font-bold" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+            <img src={Logo} alt="Logo" className="w-10 h-10 mr-2" />
+            <span className="text-lg text-gray-800 tracking-tight">KOSTHUB</span>
+          </motion.div>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex gap-6">
-          {Object.keys(tabRoutes).map((name) => (
-            <button
-              key={name}
-              onClick={() => handleNavigation(name)}
-              className={`text-base font-bold pb-1 border-b-2 ${
-                activeTab === name ? 'text-blue-500 border-blue-500' : 'text-black border-transparent'
-              }`}
-            >
-              {name}
-            </button>
-          ))}
-        </div>
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-8">
+            {Object.keys(tabRoutes).map((name, index) => (
+              <motion.button
+                key={name}
+                onClick={() => handleNavigation(name)}
+                className={`relative text-sm font-medium py-1 transition-colors focus:outline-none ${activeTab === name ? 'text-blue-600' : 'text-gray-700 hover:text-blue-500'}`}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                {name}
+                {activeTab === name && <motion.div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full" layoutId="activeTabIndicator" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
+              </motion.button>
+            ))}
+          </div>
 
         {/* User Profile or Login/Daftar */}
         <div className="relative flex items-center" ref={dropdownRef}>

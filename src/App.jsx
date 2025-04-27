@@ -21,7 +21,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       {/*       <Route path="/" element={<Map />} /> */}
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/navigator" element={<Navigator />} />
       <Route path="/marker" element={<Marker />} />
       <Route path="/points" element={<Points />} />

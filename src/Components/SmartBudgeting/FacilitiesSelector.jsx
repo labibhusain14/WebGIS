@@ -2,62 +2,67 @@ import { useState } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { facilityGroups } from './data/facilityGroups';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function FacilitiesSelector({ selectedFacilities, onFacilityChange, onFacilityPreset }) {
   const [openFacilityGroup, setOpenFacilityGroup] = useState(null);
 
   return (
-    <>
-      <div className="mb-3">
-        <label className="block text-gray-600 mb-1 text-xs font-semibold">Fasilitas</label>
+    <div className="space-y-4">
+      <div>
+        <label className="block text-gray-700 mb-2 text-sm font-semibold">Fasilitas</label>
 
-        <div className="border rounded-md p-2 max-h-40 overflow-y-auto">
+        <div className="border rounded-xl p-3 max-h-48 overflow-y-auto bg-white shadow-sm">
           {Object.entries(facilityGroups).map(([groupName, facilities]) => (
-            <div key={groupName} className="mb-2">
-              <div className="flex items-center justify-between bg-gray-100 p-1 rounded cursor-pointer" onClick={() => setOpenFacilityGroup(openFacilityGroup === groupName ? null : groupName)}>
-                <span className="text-xs font-medium">{groupName}</span>
-                <ChevronDown className={`w-3 h-3 transition-transform ${openFacilityGroup === groupName ? 'rotate-180' : 'rotate-0'}`} />
+            <div key={groupName} className="mb-3">
+              <div className="flex items-center justify-between bg-gray-100 hover:bg-gray-200 transition p-2 rounded-lg cursor-pointer" onClick={() => setOpenFacilityGroup(openFacilityGroup === groupName ? null : groupName)}>
+                <span className="text-sm font-medium">{groupName}</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${openFacilityGroup === groupName ? 'rotate-180' : 'rotate-0'}`} />
               </div>
 
-              {openFacilityGroup === groupName && (
-                <div className="pl-2 mt-1 grid grid-cols-2 gap-x-2 gap-y-1">
-                  {facilities.map((facility) => (
-                    <label key={facility} className="flex items-center text-xs">
-                      <input type="checkbox" className="mr-1" checked={selectedFacilities.includes(facility)} onChange={() => onFacilityChange('fasilitas', facility)} />
-                      {facility}
-                    </label>
-                  ))}
-                </div>
-              )}
+              <AnimatePresence>
+                {openFacilityGroup === groupName && (
+                  <motion.div className="pl-3 pt-2 grid grid-cols-2 gap-x-2 gap-y-2" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}>
+                    {facilities.map((facility) => (
+                      <label key={facility} className="flex items-center text-sm space-x-2">
+                        <input type="checkbox" className="accent-blue-500" checked={selectedFacilities.includes(facility)} onChange={() => onFacilityChange('fasilitas', facility)} />
+                        <span>{facility}</span>
+                      </label>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
         </div>
+      </div>
 
-        <div className="mt-2">
-          <p className="text-xs text-gray-500 mb-1">Fasilitas terpilih:</p>
-          <div className="flex flex-wrap gap-1">
+      {selectedFacilities.length > 0 && (
+        <div>
+          <p className="text-sm text-gray-600 mb-1">Fasilitas Terpilih:</p>
+          <div className="flex flex-wrap gap-2">
             {selectedFacilities.map((facility) => (
-              <span key={facility} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center">
+              <div key={facility} className="flex items-center bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
                 {facility}
-                <X size={12} className="ml-1 cursor-pointer" onClick={() => onFacilityChange('fasilitas', facility)} />
-              </span>
+                <X size={14} className="ml-1 cursor-pointer hover:text-red-500 transition" onClick={() => onFacilityChange('fasilitas', facility)} />
+              </div>
             ))}
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex flex-wrap gap-2 mb-2">
-        <button onClick={() => onFacilityPreset('premium')} className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-lg">
+      <div className="flex flex-wrap gap-3">
+        <button onClick={() => onFacilityPreset('premium')} className="text-xs font-semibold bg-purple-100 text-purple-700 hover:bg-purple-200 px-3 py-2 rounded-lg transition">
           Set Premium
         </button>
-        <button onClick={() => onFacilityPreset('basic')} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-lg">
+        <button onClick={() => onFacilityPreset('basic')} className="text-xs font-semibold bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-2 rounded-lg transition">
           Set Basic
         </button>
-        <button onClick={() => onFacilityPreset('clear')} className="text-xs bg-gray-50 text-gray-700 px-2 py-1 rounded-lg">
+        <button onClick={() => onFacilityPreset('clear')} className="text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-lg transition">
           Clear All
         </button>
       </div>
-    </>
+    </div>
   );
 }
 

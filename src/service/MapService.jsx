@@ -17,7 +17,7 @@ class MapService {
 
     const { latitude, longitude } = initialCoordinates;
     const defaultOptions = {
-      zoom: 14,
+      zoom: 16,
       pitch: 45,
     };
 
