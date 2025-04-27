@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Globe,
-  MapPin,
-  DollarSign,
-  MessageCircle,
-  ChevronRight,
-} from 'lucide-react';
+import { Globe, MapPin, DollarSign, MessageCircle, ChevronRight } from 'lucide-react';
 import Navbar from '../Components/Navbar';
 import RegisterButton from '../Components/RegisterButton';
 
@@ -14,19 +8,19 @@ const LandingPage = () => {
   const heroRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-    useEffect(() => {
-      const handleMouseMove = (e) => {
-        if (heroRef.current) {
-          const rect = heroRef.current.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width - 0.5;
-          const y = (e.clientY - rect.top) / rect.height - 0.5;
-          setMousePosition({ x: x * 20, y: y * 20 });
-        }
-      };
-  
-      window.addEventListener('mousemove', handleMouseMove);
-      return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        setMousePosition({ x: x * 20, y: y * 20 });
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -63,36 +57,17 @@ const LandingPage = () => {
     },
   };
 
-
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       <Navbar />
 
       {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="relative bg-gradient-to-r from-blue-900 to-blue-700 text-white overflow-hidden"
-        ref={heroRef}
-      >
+      <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} className="relative bg-gradient-to-r from-blue-900 to-blue-700 text-white overflow-hidden" ref={heroRef}>
         {/* Background SVG Map */}
         <div className="absolute inset-0 opacity-10">
-          <motion.svg
-            viewBox="0 0 800 600"
-            className="w-full h-full"
-            xmlns="http://www.w3.org/2000/svg"
-            initial={{ scale: 1.2, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.5, ease: 'easeOut' }}
-          >
+          <motion.svg viewBox="0 0 800 600" className="w-full h-full" xmlns="http://www.w3.org/2000/svg" initial={{ scale: 1.2, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.5, ease: 'easeOut' }}>
             <path d="M0,0 L800,0 L800,600 L0,600 Z" fill="#001220" />
-            <path
-              d="M100,100 Q400,50 700,150 T100,300 T700,450 T100,600"
-              fill="none"
-              stroke="#4CAF50"
-              strokeWidth="1"
-            />
+            <path d="M100,100 Q400,50 700,150 T100,300 T700,450 T100,600" fill="none" stroke="#4CAF50" strokeWidth="1" />
             <circle cx="300" cy="150" r="5" fill="#E91E63" />
             <circle cx="500" cy="250" r="5" fill="#E91E63" />
             <circle cx="200" cy="350" r="5" fill="#E91E63" />
@@ -104,30 +79,13 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             {/* Text Content */}
             <div className="text-center md:text-left">
-              <motion.h1
-                variants={fadeIn}
-                initial="hidden"
-                animate="visible"
-                className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
-              >
+              <motion.h1 variants={fadeIn} initial="hidden" animate="visible" className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                 Temukan Kos Ideal Anda dengan <span className="text-blue-300">KostHub</span>
               </motion.h1>
-              <motion.p
-                variants={fadeIn}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.2 }}
-                className="text-lg md:text-xl mb-8 max-w-lg mx-auto md:mx-0"
-              >
+              <motion.p variants={fadeIn} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="text-lg md:text-xl mb-8 max-w-lg mx-auto md:mx-0">
                 Platform pencarian kos berbasis WebGIS dan AI yang membantu Anda menemukan hunian sesuai lokasi, budget, dan preferensi dengan cepat dan cerdas.
               </motion.p>
-              <motion.div
-                variants={fadeIn}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.4 }}
-                className="flex justify-center md:justify-start"
-              >
+              <motion.div variants={fadeIn} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex justify-center md:justify-start">
                 <motion.a
                   href="/login"
                   whileHover={{ scale: 1.1, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' }}
@@ -166,17 +124,8 @@ const LandingPage = () => {
         </div>
       </motion.section>
       {/* Features Section */}
-      <motion.section
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="max-w-6xl mx-auto px-4 py-16"
-      >
-        <motion.h2
-          variants={fadeIn}
-          className="text-3xl md:text-4xl font-bold text-blue-900 text-center mb-12"
-        >
+      <motion.section variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} className="max-w-6xl mx-auto px-4 py-16">
+        <motion.h2 variants={fadeIn} className="text-3xl md:text-4xl font-bold text-blue-900 text-center mb-12">
           Mengapa Memilih KostHub?
         </motion.h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -197,23 +146,11 @@ const LandingPage = () => {
               description: 'Dapatkan bantuan kapan saja dengan chatbot AI kami yang siap menjawab pertanyaan dan merekomendasikan kos terbaik.',
             },
           ].map((feature, index) => (
-            <motion.div
-              key={index}
-              variants={featureCard}
-              whileHover="hover"
-              className="bg-white p-6 rounded-lg shadow-md transition-transform"
-            >
-              <motion.div
-                className="flex justify-center mb-4"
-                initial={{ rotate: 0 }}
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.8 }}
-              >
+            <motion.div key={index} variants={featureCard} whileHover="hover" className="bg-white p-6 rounded-lg shadow-md transition-transform">
+              <motion.div className="flex justify-center mb-4" initial={{ rotate: 0 }} whileHover={{ rotate: 360 }} transition={{ duration: 0.8 }}>
                 {feature.icon}
               </motion.div>
-              <h3 className="text-xl font-semibold text-blue-900 mb-3 text-center">
-                {feature.title}
-              </h3>
+              <h3 className="text-xl font-semibold text-blue-900 mb-3 text-center">{feature.title}</h3>
               <p className="text-gray-600 text-center">{feature.description}</p>
             </motion.div>
           ))}
@@ -221,18 +158,9 @@ const LandingPage = () => {
       </motion.section>
 
       {/* How It Works Section */}
-      <motion.section
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="bg-gray-100 py-16"
-      >
+      <motion.section variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} className="bg-gray-100 py-16">
         <div className="max-w-6xl mx-auto px-4">
-          <motion.h2
-            variants={fadeIn}
-            className="text-3xl md:text-4xl font-bold text-blue-900 text-center mb-12"
-          >
+          <motion.h2 variants={fadeIn} className="text-3xl md:text-4xl font-bold text-blue-900 text-center mb-12">
             Cara Kerja KostHub
           </motion.h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -253,23 +181,11 @@ const LandingPage = () => {
                 description: 'Chatbot AI kami akan memberikan rekomendasi personal dan membantu Anda hingga menemukan kos ideal.',
               },
             ].map((step, index) => (
-              <motion.div
-                key={index}
-                variants={fadeIn}
-                className="text-center"
-              >
-                <motion.div
-                  className="flex justify-center mb-4"
-                  whileHover={{ scale: 1.2, rotate: 10 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-bold">
-                    {step.step}
-                  </div>
+              <motion.div key={index} variants={fadeIn} className="text-center">
+                <motion.div className="flex justify-center mb-4" whileHover={{ scale: 1.2, rotate: 10 }} transition={{ duration: 0.3 }}>
+                  <div className="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-bold">{step.step}</div>
                 </motion.div>
-                <h3 className="text-xl font-semibold text-blue-900 mb-3">
-                  {step.title}
-                </h3>
+                <h3 className="text-xl font-semibold text-blue-900 mb-3">{step.title}</h3>
                 <p className="text-gray-600">{step.description}</p>
               </motion.div>
             ))}
@@ -278,48 +194,23 @@ const LandingPage = () => {
       </motion.section>
 
       {/* Call to Action Section */}
-      <motion.section
-        variants={fadeIn}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        className="max-w-6xl mx-auto px-4 py-16 text-center"
-      >
-        <motion.h2
-          variants={fadeIn}
-          className="text-3xl md:text-4xl font-bold text-blue-900 mb-6"
-        >
+      <motion.section variants={fadeIn} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-6xl mx-auto px-4 py-16 text-center">
+        <motion.h2 variants={fadeIn} className="text-3xl md:text-4xl font-bold text-blue-900 mb-6">
           Siap Menemukan Kos Impian Anda?
         </motion.h2>
-        <motion.p
-          variants={fadeIn}
-          transition={{ delay: 0.2 }}
-          className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto"
-        >
+        <motion.p variants={fadeIn} transition={{ delay: 0.2 }} className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
           Bergabunglah dengan ribuan pengguna yang telah menemukan hunian ideal mereka dengan KostHub. Mulai pencarian Anda sekarang!
         </motion.p>
         <RegisterButton /> {/* Replaced email form with RegisterButton component */}
       </motion.section>
 
       {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="bg-blue-900 text-white py-8"
-      >
+      <motion.footer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} className="bg-blue-900 text-white py-8">
         <div className="max-w-6xl mx-auto px-4">
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div variants={fadeIn}>
               <h3 className="text-xl font-bold mb-4">KostHub Solutions</h3>
-              <p className="text-gray-300">
-                Platform pencarian kos berbasis WebGIS dan AI untuk hunian ideal Anda.
-              </p>
+              <p className="text-gray-300">Platform pencarian kos berbasis WebGIS dan AI untuk hunian ideal Anda.</p>
             </motion.div>
             <motion.div variants={fadeIn}>
               <h3 className="text-xl font-bold mb-4">Kontak Kami</h3>
@@ -335,34 +226,19 @@ const LandingPage = () => {
             <motion.div variants={fadeIn}>
               <h3 className="text-xl font-bold mb-4">Ikuti Kami</h3>
               <div className="flex space-x-4">
-                <motion.a
-                  href="#"
-                  className="text-gray-300 hover:text-white"
-                  whileHover={{ y: -2 }}
-                >
+                <motion.a href="#" className="text-gray-300 hover:text-white" whileHover={{ y: -2 }}>
                   Twitter
                 </motion.a>
-                <motion.a
-                  href="#"
-                  className="text-gray-300 hover:text-white"
-                  whileHover={{ y: -2 }}
-                >
+                <motion.a href="#" className="text-gray-300 hover:text-white" whileHover={{ y: -2 }}>
                   Instagram
                 </motion.a>
-                <motion.a
-                  href="#"
-                  className="text-gray-300 hover:text-white"
-                  whileHover={{ y: -2 }}
-                >
+                <motion.a href="#" className="text-gray-300 hover:text-white" whileHover={{ y: -2 }}>
                   LinkedIn
                 </motion.a>
               </div>
             </motion.div>
           </motion.div>
-          <motion.div
-            variants={fadeIn}
-            className="mt-8 text-center text-gray-300"
-          >
+          <motion.div variants={fadeIn} className="mt-8 text-center text-gray-300">
             © 2025 KostHub. All rights reserved.
           </motion.div>
         </div>
