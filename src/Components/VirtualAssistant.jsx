@@ -26,52 +26,53 @@ function VirtualAssistant() {
     setInput("");
     setIsLoading(true);
 
-    query({ question: input }).then(async (response) => {
-      // console.log(response);
-      if (response) {
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        const botReply = {
-          id: Date.now(),
-          text: response.text,
-          sender: "bot",
-        };
-        setMessages((prevMessages) => [...prevMessages, botReply]);
-      }
-    });
-    // try {
-    //   // If service is not enabled, send a default "coming soon" message
-    //   if (!enable) {
-    //     // Simulate realistic typing delay
+    // query({ question: input }).then(async (response) => {
+    //   // console.log(response);
+    //   if (response) {
     //     await new Promise((resolve) => setTimeout(resolve, 800));
-
     //     const botReply = {
     //       id: Date.now(),
-    //       text: "Our service is coming soon. Stay tuned!",
+    //       text: response.text,
     //       sender: "bot",
     //     };
     //     setMessages((prevMessages) => [...prevMessages, botReply]);
-    //   } else {
-    //     const response = await query({ question: input });
-    //     if (response) {
-    //       const botReply = {
-    //         id: Date.now(),
-    //         text: response.text,
-    //         sender: "bot",
-    //       };
-    //       setMessages((prevMessages) => [...prevMessages, botReply]);
-    //     }
+    //     setIsLoading(false);
     //   }
-    // } catch (error) {
-    //   console.error("Error sending message:", error);
-    //   const errorMessage = {
-    //     id: Date.now(),
-    //     text: "Sorry, I couldn't process your request. Please try again.",
-    //     sender: "bot",
-    //   };
-    //   setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    // });
+    try {
+      // If service is not enabled, send a default "coming soon" message
+      if (!enable) {
+        // Simulate realistic typing delay
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
+        const botReply = {
+          id: Date.now(),
+          text: "Our service is coming soon. Stay tuned!",
+          sender: "bot",
+        };
+        setMessages((prevMessages) => [...prevMessages, botReply]);
+      } else {
+        const response = await query({ question: input });
+        if (response) {
+          const botReply = {
+            id: Date.now(),
+            text: response.text,
+            sender: "bot",
+          };
+          setMessages((prevMessages) => [...prevMessages, botReply]);
+        }
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      const errorMessage = {
+        id: Date.now(),
+        text: "Sorry, I couldn't process your request. Please try again.",
+        sender: "bot",
+      };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e) => {

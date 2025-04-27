@@ -1,507 +1,274 @@
-import React, { useState, useEffect, useMemo } from 'react';
+// src/Pages/Dashboard.jsx
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../Components/Navbar';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ScatterChart, Scatter, ResponsiveContainer } from 'recharts';
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import DashboardFilter from '../Components/DashboardFilter';
+import { useDashboardData } from '../hooks/useDashboardData';
+import { PriceCategories, FacilitiesHistogram, FacilitiesDistribution, PriceAreaScatter, FacilityPriceTrends, LocationMap } from '../Components/DashboardCharts';
 import dashboardData from '../data/dashboard_data.json';
+import KeyMetrics from '../Components/DashboardCharts/KeyMetrics';
 
 const Dashboard = () => {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const {
+    filteredData,
+    metrics,
+    chartData,
+    mapCenter,
+    availableKecamatans,
+    availableGenders,
+    selectedKecamatans,
+    selectedGenders,
+    priceRange,
+    fullPriceRange,
+    handleKecamatanChange,
+    handleSelectAllKecamatans,
+    handleClearKecamatans,
+    handleGenderChange,
+    handlePriceRangeChange,
+  } = useDashboardData(dashboardData);
 
-  // Filter states
-  const [selectedKecamatans, setSelectedKecamatans] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 10000000]);
-  const [selectedGenders, setSelectedGenders] = useState([]);
-
+  // Simulate loading state
   useEffect(() => {
-    // Process the imported JSON data
-    const processedData = dashboardData.filter((item) => item.harga); // Filter out incomplete rows
-
-    // Fix known incorrect values
-    const fixedData = processedData.map((item) => {
-      if (item.id === 563) {
-        return { ...item, lebar: 3.5 };
-      }
-      if (item.id === 677) {
-        return { ...item, lebar: 2.5, panjang: 2.8 };
-      }
-      if (item.id === 811) {
-        return { ...item, lebar: 4.5 };
-      }
-      return item;
-    });
-
-    setData(fixedData);
-
-    // Initialize filters with all values
-    const kecamatans = [...new Set(fixedData.map((item) => item.kecamatan))].sort();
-    setSelectedKecamatans(kecamatans);
-
-    const genders = [...new Set(fixedData.map((item) => item.gender))];
-    setSelectedGenders(genders);
-
-    const minPrice = Math.min(...fixedData.map((item) => item.harga));
-    const maxPrice = Math.max(...fixedData.map((item) => item.harga));
-    setPriceRange([minPrice, maxPrice]);
-
-    setFilteredData(fixedData);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Apply filters when they change
-  useEffect(() => {
-    if (data.length) {
-      const filtered = data.filter((item) => selectedKecamatans.includes(item.kecamatan) && selectedGenders.includes(item.gender) && item.harga >= priceRange[0] && item.harga <= priceRange[1]);
-      setFilteredData(filtered);
-    }
-  }, [selectedKecamatans, selectedGenders, priceRange, data]);
+  const toggleMobileFilter = () => {
+    setIsMobileFilterOpen(!isMobileFilterOpen);
+  };
+  const handleExportData = () => {
+    setIsExporting(true);
 
-  // Compute metrics
-  const metrics = useMemo(() => {
-    if (!filteredData.length) return { count: 0, avgPrice: 0, avgArea: 0, kecCount: 0 };
+    setTimeout(() => {
+      try {
+        // Convert the filteredData to CSV or JSON
+        const dataStr = JSON.stringify(filteredData, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
-    return {
-      count: filteredData.length,
-      avgPrice: filteredData.reduce((sum, item) => sum + item.harga, 0) / filteredData.length,
-      avgArea: filteredData.reduce((sum, item) => sum + item.luas_m2, 0) / filteredData.length,
-      kecCount: new Set(filteredData.map((item) => item.kecamatan)).size,
-    };
-  }, [filteredData]);
-
-  // Prepare data for price category chart
-  const priceCategories = useMemo(() => {
-    if (!filteredData.length) return [];
-
-    const categories = {};
-    filteredData.forEach((item) => {
-      categories[item.kategori_harga] = (categories[item.kategori_harga] || 0) + 1;
-    });
-
-    return Object.keys(categories)
-      .map((key) => ({
-        category: key,
-        count: categories[key],
-      }))
-      .sort((a, b) => b.count - a.count);
-  }, [filteredData]);
-
-  // Prepare data for facilities histogram
-  const facilitiesHistogram = useMemo(() => {
-    if (!filteredData.length) return [];
-
-    const histogram = {};
-    filteredData.forEach((item) => {
-      const bin = item.total_facilities;
-      histogram[bin] = (histogram[bin] || 0) + 1;
-    });
-
-    return Object.keys(histogram)
-      .map((key) => ({
-        facilities: parseInt(key),
-        count: histogram[key],
-      }))
-      .sort((a, b) => a.facilities - b.facilities);
-  }, [filteredData]);
-
-  // Prepare data for price vs facilities trends
-  const facilityPriceTrends = useMemo(() => {
-    if (!filteredData.length) return { premium: [], nonPremium: [], neutral: [] };
-
-    const premiumGroups = {};
-    const nonPremiumGroups = {};
-    const neutralGroups = {};
-
-    filteredData.forEach((item) => {
-      // Premium
-      if (!premiumGroups[item.jumlah_fasilitas_premium]) {
-        premiumGroups[item.jumlah_fasilitas_premium] = {
-          count: 0,
-          sum: 0,
-        };
+        // Create a link and trigger download
+        const exportLink = document.createElement('a');
+        exportLink.setAttribute('href', dataUri);
+        exportLink.setAttribute('download', 'kost_data_export.json');
+        document.body.appendChild(exportLink);
+        exportLink.click();
+        document.body.removeChild(exportLink);
+      } catch (error) {
+        console.error('Export failed:', error);
+      } finally {
+        setIsExporting(false);
       }
-      premiumGroups[item.jumlah_fasilitas_premium].count++;
-      premiumGroups[item.jumlah_fasilitas_premium].sum += item.harga;
-
-      // Non-Premium
-      if (!nonPremiumGroups[item.jumlah_fasilitas_non_premium]) {
-        nonPremiumGroups[item.jumlah_fasilitas_non_premium] = {
-          count: 0,
-          sum: 0,
-        };
-      }
-      nonPremiumGroups[item.jumlah_fasilitas_non_premium].count++;
-      nonPremiumGroups[item.jumlah_fasilitas_non_premium].sum += item.harga;
-
-      // Neutral
-      if (!neutralGroups[item.jumlah_fasilitas_netral]) {
-        neutralGroups[item.jumlah_fasilitas_netral] = {
-          count: 0,
-          sum: 0,
-        };
-      }
-      neutralGroups[item.jumlah_fasilitas_netral].count++;
-      neutralGroups[item.jumlah_fasilitas_netral].sum += item.harga;
-    });
-
-    return {
-      premium: Object.keys(premiumGroups)
-        .map((key) => ({
-          facilities: parseInt(key),
-          avgPrice: premiumGroups[key].sum / premiumGroups[key].count,
-        }))
-        .sort((a, b) => a.facilities - b.facilities),
-
-      nonPremium: Object.keys(nonPremiumGroups)
-        .map((key) => ({
-          facilities: parseInt(key),
-          avgPrice: nonPremiumGroups[key].sum / nonPremiumGroups[key].count,
-        }))
-        .sort((a, b) => a.facilities - b.facilities),
-
-      neutral: Object.keys(neutralGroups)
-        .map((key) => ({
-          facilities: parseInt(key),
-          avgPrice: neutralGroups[key].sum / neutralGroups[key].count,
-        }))
-        .sort((a, b) => a.facilities - b.facilities),
-    };
-  }, [filteredData]);
-
-  // Get unique kecamatans and genders for filters
-  const availableKecamatans = useMemo(() => {
-    return [...new Set(data.map((item) => item.kecamatan))].sort();
-  }, [data]);
-
-  const availableGenders = useMemo(() => {
-    return [...new Set(data.map((item) => item.gender))];
-  }, [data]);
-
-  // Calculate price range for slider
-  const fullPriceRange = useMemo(() => {
-    if (!data.length) return [0, 10000000];
-    return [Math.min(...data.map((item) => item.harga)), Math.max(...data.map((item) => item.harga))];
-  }, [data]);
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID').format(price);
+    }, 1000);
+  };
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
   };
 
-  // Handle filter changes
-  const handleKecamatanChange = (kec) => {
-    if (selectedKecamatans.includes(kec)) {
-      setSelectedKecamatans(selectedKecamatans.filter((k) => k !== kec));
-    } else {
-      setSelectedKecamatans([...selectedKecamatans, kec]);
-    }
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
   };
-
-  const handleSelectAllKecamatans = () => {
-    setSelectedKecamatans([...availableKecamatans]);
-  };
-
-  const handleClearKecamatans = () => {
-    setSelectedKecamatans([]);
-  };
-
-  const handleGenderChange = (gender) => {
-    if (selectedGenders.includes(gender)) {
-      setSelectedGenders(selectedGenders.filter((g) => g !== gender));
-    } else {
-      setSelectedGenders([...selectedGenders, gender]);
-    }
-  };
-
-  const handlePriceRangeChange = (event) => {
-    const [min, max] = event.target.value.split(',').map(Number);
-    setPriceRange([min, max]);
-  };
-
-  // Calculate map center
-  const mapCenter = useMemo(() => {
-    if (!filteredData.length) return [-6.9, 107.6]; // Default to Bandung area
-
-    const latSum = filteredData.reduce((sum, item) => sum + item.latitude, 0);
-    const lngSum = filteredData.reduce((sum, item) => sum + item.longitude, 0);
-
-    return [latSum / filteredData.length, lngSum / filteredData.length];
-  }, [filteredData]);
 
   return (
-    <div className="mt-12 relative min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="flex flex-col md:flex-row">
-        {/* Sidebar Filter */}
-        <div className="w-full md:w-64 bg-white p-4 shadow-md">
-          <h2 className="text-xl font-bold mb-4">🎛️ Filter Data</h2>
-          {/* Kecamatan Filter */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Kecamatan</label>
-            <div className="flex gap-2 mb-2">
-              <button onClick={handleSelectAllKecamatans} className="text-xs bg-blue-500 text-white px-2 py-1 rounded">
-                Semua
-              </button>
-              <button onClick={handleClearKecamatans} className="text-xs bg-gray-500 text-white px-2 py-1 rounded">
-                Reset
-              </button>
-            </div>
-            <div className="max-h-40 overflow-y-auto">
-              {availableKecamatans.map((kec) => (
-                <div key={kec} className="flex items-center mb-1">
-                  <input type="checkbox" id={`kec-${kec}`} checked={selectedKecamatans.includes(kec)} onChange={() => handleKecamatanChange(kec)} className="mr-2" />
-                  <label htmlFor={`kec-${kec}`} className="text-sm">
-                    {kec}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Price Range
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Rentang Harga (Rp)</label>
-            <div className="flex justify-between text-xs mb-1">
-              <span>{formatPrice(priceRange[0])}</span>
-              <span>{formatPrice(priceRange[1])}</span>
-            </div>
-            <input type="range" min={fullPriceRange[0]} max={fullPriceRange[1]} value={`${priceRange[0]},${priceRange[1]}`} onChange={handlePriceRangeChange} className="w-full" multiple />
-          </div> */}
-          {/* Gender Filter */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipe Kos</label>
-            {availableGenders.map((gender) => (
-              <div key={gender} className="flex items-center mb-1">
-                <input type="checkbox" id={`gender-${gender}`} checked={selectedGenders.includes(gender)} onChange={() => handleGenderChange(gender)} className="mr-2" />
-                <label htmlFor={`gender-${gender}`} className="text-sm">
-                  {gender}
-                </label>
-              </div>
-            ))}
-          </div>
-          {/* Footer */}
-          <div className="mt-8 pt-4 border-t text-xs text-gray-500">KostHub 2025</div>
-        </div>
 
-        {/* Main Content */}
-        <div className="flex-1 p-4">
-          <h1 className="text-2xl font-bold mb-2">📊 Dashboard Market Analysis Kost</h1>
-          <p className="text-gray-600 mb-4">Visualisasi interaktif data kost berdasarkan harga, luas, fasilitas, dan lokasi.</p>
+      {/* Loading screen */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div className="fixed inset-0 flex items-center justify-center bg-white z-50" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+            <motion.div
+              className="flex flex-col items-center"
+              animate={{
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+              }}
+            >
+              <div className="w-24 h-24 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+              <p className="mt-4 text-gray-600 font-medium">Loading dashboard data...</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm text-gray-500">Total Listings</h3>
-              <p className="text-2xl font-bold">{metrics.count}</p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm text-gray-500">Harga Rata-rata (Rp)</h3>
-              <p className="text-2xl font-bold">{formatPrice(Math.round(metrics.avgPrice))}</p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm text-gray-500">Luas Rata-rata (m²)</h3>
-              <p className="text-2xl font-bold">{metrics.avgArea.toFixed(2)}</p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm text-gray-500">Kecamatan Terpilih</h3>
-              <p className="text-2xl font-bold">{metrics.kecCount}</p>
-            </div>
+      {/* Mobile filter toggle button */}
+      <div className="md:hidden fixed bottom-4 right-4 z-30">
+        <motion.button whileTap={{ scale: 0.95 }} onClick={toggleMobileFilter} className="bg-blue-600 text-white rounded-full p-4 shadow-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg>
+        </motion.button>
+      </div>
+
+      <div className="pt-16 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row">
+          {/* Filter sidebar for desktop */}
+          <div className="hidden md:block">
+            <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5 }} className="sticky top-20">
+              <DashboardFilter
+                availableKecamatans={availableKecamatans}
+                selectedKecamatans={selectedKecamatans}
+                handleKecamatanChange={handleKecamatanChange}
+                handleSelectAllKecamatans={handleSelectAllKecamatans}
+                handleClearKecamatans={handleClearKecamatans}
+                availableGenders={availableGenders}
+                selectedGenders={selectedGenders}
+                handleGenderChange={handleGenderChange}
+                priceRange={priceRange}
+                fullPriceRange={fullPriceRange}
+                handlePriceRangeChange={handlePriceRangeChange}
+                isMobile={false}
+              />
+            </motion.div>
           </div>
 
-          {/* Row 1: KDE and Price Category */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-lg font-medium mb-2">📈 Distribusi Harga</h3>
-              {filteredData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={priceCategories}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="category" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-gray-500">Tidak ada data untuk ditampilkan.</p>
-              )}
-            </div>
-
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-lg font-medium mb-2">🏷️ Kategori Harga</h3>
-              {filteredData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={priceCategories}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="category" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#82ca9d" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-gray-500">Tidak ada data untuk ditampilkan.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Row 2: Facilities Histogram & Distribution */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-lg font-medium mb-2">🏗️ Histogram Total Fasilitas</h3>
-              {filteredData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={facilitiesHistogram}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="facilities" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-gray-500">Tidak ada data untuk ditampilkan.</p>
-              )}
-            </div>
-
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-lg font-medium mb-2">📦 Distribusi Fasilitas per Tipe</h3>
-              {filteredData.length > 0 ? (
-                <div className="grid grid-cols-3 gap-2 h-64">
-                  <div>
-                    <p className="text-center font-medium text-sm">Premium</p>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <BarChart data={facilityPriceTrends.premium}>
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="avgPrice" fill="#8884d8" />
-                      </BarChart>
-                    </ResponsiveContainer>
+          {/* Mobile filter sidebar */}
+          <AnimatePresence>
+            {isMobileFilterOpen && (
+              <motion.div initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', damping: 25 }} className="fixed inset-0 z-40 md:hidden">
+                <div className="absolute inset-0 bg-black bg-opacity-50" onClick={toggleMobileFilter}></div>
+                <motion.div className="absolute right-0 top-0 h-full w-3/4 bg-white shadow-lg overflow-y-auto">
+                  <div className="p-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-bold">Filter</h2>
+                      <button onClick={toggleMobileFilter} className="text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    <DashboardFilter
+                      availableKecamatans={availableKecamatans}
+                      selectedKecamatans={selectedKecamatans}
+                      handleKecamatanChange={handleKecamatanChange}
+                      handleSelectAllKecamatans={handleSelectAllKecamatans}
+                      handleClearKecamatans={handleClearKecamatans}
+                      availableGenders={availableGenders}
+                      selectedGenders={selectedGenders}
+                      handleGenderChange={handleGenderChange}
+                      priceRange={priceRange}
+                      fullPriceRange={fullPriceRange}
+                      handlePriceRangeChange={handlePriceRangeChange}
+                      isMobile={true}
+                      closeFilter={toggleMobileFilter}
+                    />
                   </div>
-                  <div>
-                    <p className="text-center font-medium text-sm">Non-Premium</p>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <BarChart data={facilityPriceTrends.nonPremium}>
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="avgPrice" fill="#82ca9d" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div>
-                    <p className="text-center font-medium text-sm">Netral</p>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <BarChart data={facilityPriceTrends.neutral}>
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="avgPrice" fill="#ffc658" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-500">Tidak ada data untuk ditampilkan.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Scatter Chart: Price vs Area */}
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="text-lg font-medium mb-2">📐 Harga vs Luas (m²) & Jumlah Fasilitas</h3>
-            {filteredData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <ScatterChart>
-                  <CartesianGrid />
-                  <XAxis type="number" dataKey="luas_m2" name="Luas (m²)" />
-                  <YAxis type="number" dataKey="harga" name="Harga (Rp)" />
-                  <Tooltip cursor={{ strokeDasharray: '3 3' }} formatter={(value) => formatPrice(value)} />
-                  <Scatter name="Kost" data={filteredData} fill="#8884d8" />
-                </ScatterChart>
-              </ResponsiveContainer>
-            ) : (
-              <p className="text-gray-500">Tidak ada data untuk ditampilkan.</p>
+                </motion.div>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
 
-          {/* Trend Charts */}
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="text-lg font-medium mb-2">📊 Trend Harga Berdasarkan Jumlah Fasilitas</h3>
-            {filteredData.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Main Content */}
+          <motion.div className="flex-1 py-4 md:pl-6" initial="hidden" animate="visible" variants={containerVariants}>
+            {/* Enhanced Dashboard Header */}
+            <motion.div className="mb-6 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 text-white" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                  <h4 className="text-center font-medium">Premium</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={facilityPriceTrends.premium}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="facilities" />
-                      <YAxis />
-                      <Tooltip formatter={(value) => formatPrice(value)} />
-                      <Line type="monotone" dataKey="avgPrice" stroke="#8884d8" activeDot={{ r: 8 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
+                    <span className="flex items-center justify-center bg-white text-blue-600 rounded-full w-10 h-10">📊</span>
+                    <span>Market Analysis Kost</span>
+                  </h1>
+                  <p className="text-blue-100 mt-2">Visualisasi interaktif data kost berdasarkan harga, luas, fasilitas, dan lokasi.</p>
                 </div>
+                <div className="flex gap-3 self-end md:self-auto">
+                  {/* Mobile filter toggle button - Now at top */}
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={toggleMobileFilter} className="md:hidden flex items-center gap-2 bg-white text-blue-700 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                    <span>Filter</span>
+                  </motion.button>
 
-                <div>
-                  <h4 className="text-center font-medium">Non-Premium</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={facilityPriceTrends.nonPremium}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="facilities" />
-                      <YAxis />
-                      <Tooltip formatter={(value) => formatPrice(value)} />
-                      <Line type="monotone" dataKey="avgPrice" stroke="#82ca9d" activeDot={{ r: 8 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-
-                <div>
-                  <h4 className="text-center font-medium">Netral</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={facilityPriceTrends.neutral}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="facilities" />
-                      <YAxis />
-                      <Tooltip formatter={(value) => formatPrice(value)} />
-                      <Line type="monotone" dataKey="avgPrice" stroke="#ffc658" activeDot={{ r: 8 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {/* Export Data Button */}
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleExportData}
+                    disabled={isExporting}
+                    className="flex items-center gap-2 bg-white text-blue-700 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium shadow-sm disabled:opacity-70"
+                  >
+                    {isExporting ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Exporting</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Export Data</span>
+                      </>
+                    )}
+                  </motion.button>
                 </div>
               </div>
-            ) : (
-              <p className="text-gray-500">Tidak ada data untuk ditampilkan.</p>
-            )}
-          </div>
+            </motion.div>
 
-          {/* Map */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-2">🗺️ Peta Persebaran Kost</h3>
-            {filteredData.length > 0 ? (
-              <div className="h-96">
-                <MapContainer center={mapCenter} zoom={13} style={{ height: '100%', width: '100%' }}>
-                  <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  {filteredData.map((item, index) => (
-                    <CircleMarker key={index} center={[item.latitude, item.longitude]} radius={5 + item.luas_m2 / 5} fillColor="#FF6347" color="#FF6347" weight={1} opacity={0.8} fillOpacity={0.6}>
-                      <Popup>
-                        <div>
-                          <p>
-                            <strong>Harga:</strong> Rp {formatPrice(item.harga)}
-                          </p>
-                          <p>
-                            <strong>Luas:</strong> {item.luas_m2} m²
-                          </p>
-                          <p>
-                            <strong>Fasilitas:</strong> {item.total_facilities}
-                          </p>
-                          <p>
-                            <strong>Kecamatan:</strong> {item.kecamatan}
-                          </p>
-                        </div>
-                      </Popup>
-                    </CircleMarker>
-                  ))}
-                </MapContainer>
+            {/* Filter summary tags */}
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-2 mb-4">
+              {selectedKecamatans.length !== availableKecamatans.length && <div className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full">{selectedKecamatans.length} kecamatan dipilih</div>}
+              {selectedGenders.length !== availableGenders.length && <div className="bg-purple-50 text-purple-700 text-xs px-3 py-1 rounded-full">{selectedGenders.map((g) => g).join(', ')}</div>}
+              <div className="bg-green-50 text-green-700 text-xs px-3 py-1 rounded-full">
+                Rp {new Intl.NumberFormat('id-ID').format(priceRange[0])} - Rp {new Intl.NumberFormat('id-ID').format(priceRange[1])}
               </div>
-            ) : (
-              <p className="text-gray-500">Tidak ada data untuk peta.</p>
-            )}
-          </div>
+            </motion.div>
+
+            {/* Key Metrics */}
+            <motion.div variants={itemVariants}>
+              <KeyMetrics metrics={metrics} />
+            </motion.div>
+            {/* Trend Charts */}
+            <motion.div variants={itemVariants} className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow mb-6">
+              <FacilityPriceTrends facilityPriceTrends={chartData.facilityPriceTrends} />
+            </motion.div>
+
+            {/* Map */}
+            <motion.div variants={itemVariants} className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow mb-6">
+              <LocationMap filteredData={filteredData} mapCenter={mapCenter} />
+            </motion.div>
+            {/* Price Distribution and Categories */}
+            <motion.div variants={itemVariants} className=" gap-4 mb-6">
+              <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                <PriceCategories priceCategories={chartData.priceCategories} />
+              </div>
+            </motion.div>
+
+            {/*Facilities Histogram & Distribution */}
+            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+              <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                <FacilitiesHistogram facilitiesHistogram={chartData.facilitiesHistogram} />
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                <FacilitiesDistribution facilityPriceTrends={chartData.facilityPriceTrends} />
+              </div>
+            </motion.div>
+
+            {/* Scatter Chart: Price vs Area */}
+            <motion.div variants={itemVariants} className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow mb-6">
+              <PriceAreaScatter filteredData={filteredData} />
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </div>
