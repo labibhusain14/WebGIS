@@ -27,7 +27,6 @@ const Navbar = () => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      console.log(parsedUser);
       if (parsedUser.id_user) {
         setUserName(parsedUser.nama);
         setIsAuthenticated(true);
@@ -49,8 +48,15 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const handleNavigation = (name) => {
-    setActiveTab(name);
-    navigate(tabRoutes[name]);
+    const targetRoute = tabRoutes[name];
+    const restrictedRoutes = ['/home', '/dashboard'];
+
+    if (location.pathname === '/landing' && !isAuthenticated && restrictedRoutes.includes(targetRoute)) {
+      navigate('/login');
+    } else {
+      setActiveTab(name);
+      navigate(targetRoute);
+    }
     setMobileMenuOpen(false);
   };
 
@@ -86,15 +92,8 @@ const Navbar = () => {
   };
 
   const buttonAnimation = {
-    hover: {
-      scale: 1.05,
-      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
-      transition: { duration: 0.3 },
-    },
-    tap: {
-      scale: 0.95,
-      transition: { duration: 0.2 },
-    },
+    hover: { scale: 1.05, boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)', transition: { duration: 0.3 } },
+    tap: { scale: 0.95, transition: { duration: 0.2 } },
   };
 
   const isLandingPage = location.pathname === '/landing';
@@ -123,7 +122,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* User Profile or Login/Daftar Buttons */}
+        {/* User Profile or Login/Daftar */}
         <div className="relative flex items-center" ref={dropdownRef}>
           {isAuthenticated ? (
             <>
@@ -157,7 +156,6 @@ const Navbar = () => {
               )}
             </>
           ) : (
-            
             <>
               {isLandingPage ? (
                 <div className="hidden md:flex items-center gap-3">
@@ -181,43 +179,41 @@ const Navbar = () => {
                   </motion.button>
                 </div>
               ) : (
-                <div className="relative flex items-center font-bold" ref={dropdownRef}>
-                <div
-                  className="text-base text-gray-600 cursor-pointer"
-                  onClick={() => setShowDropdown(!showDropdown)}
-                >
-                  {userName}
-                </div>
-                <img
-                  src="https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D"
-                  alt="Profile"
-                  className="ml-3 mr-4 w-8 h-8 rounded-full object-cover aspect-square cursor-pointer"
-                  onClick={() => setShowDropdown(!showDropdown)}
-                />
-        
-                {/* Dropdown */}
-                {showDropdown && (
-                  <div className="absolute right-0 mt-24 w-40 bg-white border rounded shadow-md z-20">
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500" />
-                      ) : (
-                        <FiLogOut className="text-lg" />
-                      )}
-                      {loading ? "Logging out..." : "Logout"}
-                    </button>
+                <div className="relative flex items-center font-bold">
+                  <div
+                    className="text-base text-gray-600 cursor-pointer"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                  >
+                    {userName}
                   </div>
-                )}
-              </div>
+                  <img
+                    src="https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D"
+                    alt="Profile"
+                    className="ml-3 mr-4 w-8 h-8 rounded-full object-cover aspect-square cursor-pointer"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                  />
+                  {showDropdown && (
+                    <div className="absolute right-0 mt-24 w-40 bg-white border rounded shadow-md z-20">
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700"
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500" />
+                        ) : (
+                          <FiLogOut className="text-lg" />
+                        )}
+                        {loading ? 'Logging out...' : 'Logout'}
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </>
           )}
 
-          {/* Hamburger Button */}
+          {/* Hamburger Menu */}
           <button
             className="md:hidden text-2xl text-gray-600"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -241,74 +237,43 @@ const Navbar = () => {
               {name}
             </button>
           ))}
-          <div className="mt-3 flex flex-col gap-2">
+          <div className="flex flex-col gap-2 mt-4">
             {isAuthenticated ? (
-              <>
-                <span className="text-gray-600">{userName}</span>
-                <button
-                  onClick={handleLogout}
-                  className="text-red-500 flex items-center gap-2 text-sm"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-red-500" />
-                  ) : (
-                    <FiLogOut />
-                  )}
-                  {loading ? 'Logging out...' : 'Logout'}
-                </button>
-              </>
+              <motion.button
+                onClick={handleLogout}
+                variants={buttonAnimation}
+                whileHover="hover"
+                whileTap="tap"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700"
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500" />
+                ) : (
+                  <FiLogOut className="text-lg" />
+                )}
+                {loading ? 'Logging out...' : 'Logout'}
+              </motion.button>
             ) : (
               <>
-                {isLandingPage ? (
-                  <>
-                    <button
-                      onClick={handleLogin}
-                      className="text-blue-600 font-semibold text-sm hover:underline"
-                    >
-                      Login
-                    </button>
-                    <button
-                      onClick={handleRegister}
-                      className="text-blue-600 font-semibold text-sm hover:underline"
-                    >
-                      Daftar
-                    </button>
-                  </>
-                ) : (
-                  <div className="relative flex items-center font-bold" ref={dropdownRef}>
-                  <div
-                    className="text-base text-gray-600 cursor-pointer"
-                    onClick={() => setShowDropdown(!showDropdown)}
-                  >
-                    {userName}
-                  </div>
-                  <img
-                    src="https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D"
-                    alt="Profile"
-                    className="ml-3 mr-4 w-8 h-8 rounded-full object-cover aspect-square cursor-pointer"
-                    onClick={() => setShowDropdown(!showDropdown)}
-                  />
-          
-                  {/* Dropdown */}
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-24 w-40 bg-white border rounded shadow-md z-20">
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700"
-                        disabled={loading}
-                      >
-                        {loading ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500" />
-                        ) : (
-                          <FiLogOut className="text-lg" />
-                        )}
-                        {loading ? "Logging out..." : "Logout"}
-                      </button>
-                    </div>
-                  )}
-                </div>
-                )}
+                <motion.button
+                  onClick={handleLogin}
+                  variants={buttonAnimation}
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="px-4 py-2 text-blue-600 font-semibold rounded-full border border-blue-600 hover:bg-blue-50 transition-colors"
+                >
+                  Login
+                </motion.button>
+                <motion.button
+                  onClick={handleRegister}
+                  variants={buttonAnimation}
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors"
+                >
+                  Daftar
+                </motion.button>
               </>
             )}
           </div>
