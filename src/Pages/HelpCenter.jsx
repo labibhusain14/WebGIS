@@ -115,7 +115,7 @@ const HelpCenterPage = () => {
       {/* Header with curved bottom */}
       <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 pb-16 relative">
         <div
-          className="absolute bottom-0 left-0 right-0 h-16 bg-gray-50"
+          className="hidden sm:block absolute bottom-0 left-0 right-0 h-16 bg-gray-50"
           style={{
             borderTopLeftRadius: '50% 100%',
             borderTopRightRadius: '50% 100%',
