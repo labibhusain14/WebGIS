@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import MapService from '../service/MapService';
+import { useEffect, useRef, useState } from "react";
+import MapService from "../service/MapService";
 
 export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
   const mapContainer = useRef(null);
@@ -10,20 +10,20 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
   const mapLoaded = useRef(false);
 
   // State variables
-  const [fullAddress, setFullAddress] = useState('');
+  const [fullAddress, setFullAddress] = useState("");
   const [markersVisible, setMarkersVisible] = useState(true);
   const [publicPlacesVisible, setPublicPlacesVisible] = useState(false);
 
   // Define marker groups - removed putra, putri, campur types
   const [markerGroups, setMarkerGroups] = useState({
     // Public places only
-    Masjid: { visible: false, color: '#4CAF50', label: 'Masjid' },
-    Rumah_Sakit: { visible: false, color: '#F44336', label: 'Rumah Sakit' },
-    Toserba: { visible: false, color: '#FF9800', label: 'Toserba' },
-    Tempat_Makan: { visible: false, color: '#9C27B0', label: 'Tempat Makan' },
-    Terminal: { visible: false, color: '#03A9F4', label: 'Terminal' },
-    Stasiun: { visible: false, color: '#795548', label: 'Stasiun' },
-    Kampus: { visible: false, color: '#607D8B', label: 'Kampus' },
+    Masjid: { visible: false, color: "#4CAF50", label: "Masjid" },
+    Rumah_Sakit: { visible: false, color: "#F44336", label: "Rumah Sakit" },
+    Toserba: { visible: false, color: "#FF9800", label: "Toserba" },
+    Tempat_Makan: { visible: false, color: "#9C27B0", label: "Tempat Makan" },
+    Terminal: { visible: false, color: "#03A9F4", label: "Terminal" },
+    Stasiun: { visible: false, color: "#795548", label: "Stasiun" },
+    Kampus: { visible: false, color: "#607D8B", label: "Kampus" },
   });
 
   // Initialize map
@@ -31,7 +31,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
     if (!mapContainer.current || mapInitialized.current) return;
 
     const initializeMap = async () => {
-      console.log('Initializing map in background...');
+      console.log("Initializing map in background...");
       mapInitialized.current = true;
 
       // Use Bandung coordinates (default center)
@@ -39,10 +39,14 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
       const longitude = 107.616888;
 
       // Initialize map using the service
-      map.current = MapService.initializeMap(mapContainer.current, MAP_SERVICE_KEY, { latitude, longitude });
+      map.current = MapService.initializeMap(
+        mapContainer.current,
+        MAP_SERVICE_KEY,
+        { latitude, longitude }
+      );
 
       // Map click handler
-      map.current.on('click', async (e) => {
+      map.current.on("click", async (e) => {
         const coordinates = e.lngLat;
         const latitude = coordinates.lat;
         const longitude = coordinates.lng;
@@ -51,23 +55,34 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
         if (markerRef.current) {
           markerRef.current.setLngLat(coordinates);
         } else {
-          markerRef.current = MapService.addMarker(map.current, [longitude, latitude], { color: 'red' });
+          markerRef.current = MapService.addMarker(
+            map.current,
+            [longitude, latitude],
+            { color: "red" }
+          );
         }
 
         // Fetch address
         try {
-          const address = await fetchAddressFromCoordinates(latitude, longitude);
+          const address = await fetchAddressFromCoordinates(
+            latitude,
+            longitude
+          );
           return { latitude, longitude, address };
         } catch (err) {
-          console.error('Failed to fetch address:', err);
+          console.error("Failed to fetch address:", err);
           return { latitude, longitude };
         }
       });
 
       // Map load handler
-      map.current.on('load', () => {
-        console.log('Map loaded, adding initial marker');
-        markerRef.current = MapService.addMarker(map.current, [longitude, latitude], { color: 'red' });
+      map.current.on("load", () => {
+        console.log("Map loaded, adding initial marker");
+        markerRef.current = MapService.addMarker(
+          map.current,
+          [longitude, latitude],
+          { color: "red" }
+        );
         mapLoaded.current = true;
 
         // Get initial address
@@ -90,12 +105,15 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
   // Fetch address function
   const fetchAddressFromCoordinates = async (latitude, longitude) => {
     try {
-      const address = await MapService.fetchAddressFromCoordinates(latitude, longitude);
+      const address = await MapService.fetchAddressFromCoordinates(
+        latitude,
+        longitude
+      );
       setFullAddress(address);
       return address;
     } catch (err) {
-      console.error('Failed to fetch address:', err);
-      return '';
+      console.error("Failed to fetch address:", err);
+      return "";
     }
   };
 
@@ -128,7 +146,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
       if (marker.isKost) {
         const markerElement = marker.getElement();
         if (markerElement) {
-          markerElement.style.display = newVisibility ? 'block' : 'none';
+          markerElement.style.display = newVisibility ? "block" : "none";
         }
       }
     });
@@ -151,7 +169,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
       if (marker.isPublicPlace) {
         const markerElement = marker.getElement();
         if (markerElement) {
-          markerElement.style.display = newVisibility ? 'block' : 'none';
+          markerElement.style.display = newVisibility ? "block" : "none";
         }
       }
     });
@@ -168,7 +186,9 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
       if (marker.placeType === groupType) {
         const markerElement = marker.getElement();
         if (markerElement) {
-          markerElement.style.display = updatedGroups[groupType].visible ? 'block' : 'none';
+          markerElement.style.display = updatedGroups[groupType].visible
+            ? "block"
+            : "none";
         }
       }
     });
@@ -177,21 +197,21 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
   // Get marker color based on type
   const getMarkerColor = (type) => {
     // Default color
-    if (!type) return '#2563eb';
+    if (!type) return "#2563eb";
 
     // For public places
     if (markerGroups[type]) {
       return markerGroups[type].color;
     }
 
-    return '#2563eb'; // Default
+    return "#2563eb"; // Default
   };
 
   // Add kost markers to map
   const addMarkersToMap = (kostData, navigate) => {
     if (!map.current) return;
 
-    console.log('Adding kost markers to map:', kostData.length);
+    console.log("Adding kost markers to map:", kostData.length);
 
     // Clear only kost markers, keep public places
     markerList.current = markerList.current.filter((marker) => {
@@ -206,15 +226,31 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
       if (kost.longitude && kost.latitude) {
         const popup = MapService.createPopup();
         // Use default marker color since we're not categorizing by types anymore
-        const markerColor = '#2563eb'; // Default blue color
+        const markerColor = "#2563eb"; // Default blue color
 
         // All kost markers visible based on global setting
         const isVisible = markersVisible;
 
         popup.setHTML(`
           <div class="p-4 bg-white rounded-xl shadow-lg min-w-[240px] font-sans">
-            <h3 class="text-base font-semibold text-gray-900 mb-2">${kost.nama_kost}</h3>
-            <p class="text-sm text-gray-600 mb-3 leading-relaxed">${kost.alamat}</p>
+            <div class="flex items-start gap-3 mb-3">
+              <img 
+                src="${
+                  kost.gambar_kost?.[0]?.url_gambar ||
+                  "src/assets/preview-2.jpg"
+                }" 
+                alt="Foto Kost" 
+                class="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+              />
+              <div>
+                <h3 class="text-base font-semibold text-gray-900">${
+                  kost.nama_kost
+                }</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">${
+                  kost.alamat
+                }</p>
+              </div>
+            </div>
             <div class="flex items-center justify-between">
               <div class="text-sm font-medium text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg">
                 Rp${Number(kost.harga_sewa).toLocaleString()}
@@ -229,7 +265,11 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
           </div>
         `);
 
-        const marker = MapService.addMarker(map.current, [kost.longitude, kost.latitude], { color: markerColor, scale: 0.9 });
+        const marker = MapService.addMarker(
+          map.current,
+          [kost.longitude, kost.latitude],
+          { color: markerColor, scale: 0.9 }
+        );
 
         // Mark as kost marker
         marker.isKost = true;
@@ -239,7 +279,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
         // Set initial visibility
         const markerElement = marker.getElement();
         if (markerElement) {
-          markerElement.style.display = isVisible ? 'block' : 'none';
+          markerElement.style.display = isVisible ? "block" : "none";
         }
 
         // Get the marker element
@@ -248,7 +288,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
         let isHovering = false;
 
         // Add hover intent behavior
-        markerElement.addEventListener('mouseenter', () => {
+        markerElement.addEventListener("mouseenter", () => {
           isHovering = true;
           clearTimeout(hoverTimeout);
 
@@ -261,7 +301,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
           }, 300);
         });
 
-        markerElement.addEventListener('mouseleave', () => {
+        markerElement.addEventListener("mouseleave", () => {
           isHovering = false;
           clearTimeout(hoverTimeout);
 
@@ -274,7 +314,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
           }, 400);
         });
 
-        markerElement.addEventListener('click', () => {
+        markerElement.addEventListener("click", () => {
           // Toggle popup on click
           if (isPopupOpen) {
             marker.togglePopup();
@@ -286,17 +326,17 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
         });
 
         // Popup event handlers
-        popup.on('open', () => {
+        popup.on("open", () => {
           isPopupOpen = true;
           const popupElement = popup.getElement();
 
           if (popupElement) {
-            popupElement.addEventListener('mouseenter', () => {
+            popupElement.addEventListener("mouseenter", () => {
               isHovering = true;
               clearTimeout(hoverTimeout);
             });
 
-            popupElement.addEventListener('mouseleave', () => {
+            popupElement.addEventListener("mouseleave", () => {
               isHovering = false;
               clearTimeout(hoverTimeout);
 
@@ -309,9 +349,11 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
             });
 
             // Set up detail button click handler
-            const detailButton = document.getElementById(`detail-btn-${kost.id_kost}`);
+            const detailButton = document.getElementById(
+              `detail-btn-${kost.id_kost}`
+            );
             if (detailButton) {
-              detailButton.addEventListener('click', (e) => {
+              detailButton.addEventListener("click", (e) => {
                 e.stopPropagation();
                 navigate(`/detail/${kost.id_kost}`);
               });
@@ -319,7 +361,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
           }
         });
 
-        popup.on('close', () => {
+        popup.on("close", () => {
           isPopupOpen = false;
         });
 
@@ -332,7 +374,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
   const addPublicPlacesToMap = (publicPlaces) => {
     if (!map.current) return;
 
-    console.log('Adding public places to map:', publicPlaces.length);
+    console.log("Adding public places to map:", publicPlaces.length);
 
     // Clear only public place markers, keep kost markers
     markerList.current = markerList.current.filter((marker) => {
@@ -357,14 +399,20 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
 
         popup.setHTML(`
           <div class="p-4 bg-white rounded-xl shadow-lg min-w-[200px] font-sans">
-            <h3 class="text-base font-semibold text-gray-900 mb-2">${place.Nama}</h3>
+            <h3 class="text-base font-semibold text-gray-900 mb-2">${
+              place.Nama
+            }</h3>
             <div class="text-sm font-medium text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg">
-              ${place.Jenis.replace('_', ' ')}
+              ${place.Jenis.replace("_", " ")}
             </div>
           </div>
         `);
 
-        const marker = MapService.addMarker(map.current, [place.longitude, place.latitude], { color: markerColor, scale: 0.8 });
+        const marker = MapService.addMarker(
+          map.current,
+          [place.longitude, place.latitude],
+          { color: markerColor, scale: 0.8 }
+        );
 
         // Store place type with marker for filtering
         marker.placeType = placeType;
@@ -375,7 +423,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
         // Set initial visibility
         const markerElement = marker.getElement();
         if (markerElement) {
-          markerElement.style.display = isVisible ? 'block' : 'none';
+          markerElement.style.display = isVisible ? "block" : "none";
         }
 
         // Get the marker element
@@ -384,7 +432,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
         let isHovering = false;
 
         // Add hover intent behavior
-        markerElement.addEventListener('mouseenter', () => {
+        markerElement.addEventListener("mouseenter", () => {
           isHovering = true;
           clearTimeout(hoverTimeout);
 
@@ -397,7 +445,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
           }, 300);
         });
 
-        markerElement.addEventListener('mouseleave', () => {
+        markerElement.addEventListener("mouseleave", () => {
           isHovering = false;
           clearTimeout(hoverTimeout);
 
@@ -410,7 +458,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
           }, 400);
         });
 
-        markerElement.addEventListener('click', () => {
+        markerElement.addEventListener("click", () => {
           // Toggle popup on click
           if (isPopupOpen) {
             marker.togglePopup();
@@ -422,17 +470,17 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
         });
 
         // Popup event handlers
-        popup.on('open', () => {
+        popup.on("open", () => {
           isPopupOpen = true;
           const popupElement = popup.getElement();
 
           if (popupElement) {
-            popupElement.addEventListener('mouseenter', () => {
+            popupElement.addEventListener("mouseenter", () => {
               isHovering = true;
               clearTimeout(hoverTimeout);
             });
 
-            popupElement.addEventListener('mouseleave', () => {
+            popupElement.addEventListener("mouseleave", () => {
               isHovering = false;
               clearTimeout(hoverTimeout);
 
@@ -446,7 +494,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
           }
         });
 
-        popup.on('close', () => {
+        popup.on("close", () => {
           isPopupOpen = false;
         });
 

@@ -212,7 +212,7 @@ function Home() {
       </motion.button>
 
       {/* Map Controls Group */}
-      <div className="fixed top-[75px] right-2 z-10 flex flex-col gap-2">
+      <div className="fixed top-[90px] right-2 z-10 flex flex-col gap-2">
         {/* Map Legend Toggle Button */}
         <motion.button
           onClick={toggleLegend}

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Mic, Send, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Logo from "../assets/Logo.png";
 
 function VirtualAssistant() {
   const [messages, setMessages] = useState([]);
@@ -97,24 +98,29 @@ function VirtualAssistant() {
   }
 
   return (
-    <div className="w-[480px] flex flex-col h-full bg-blue-100 overflow-hidden shadow-xl">
-      {/* Header
-      <div className="bg-gray-800 p-4 border-b border-gray-700">
-        <h2 className="text-lg font-medium text-white">Virtual Assistant</h2>
-      </div> */}
-
+    <div className="w-[550px] flex flex-col h-full bg-[#ECF0F1] rounded-lg overflow-hidden shadow-xl">
       {/* Chat Area */}
-      <div className="flex-1 p-4 overflow-auto scrollbar-thin scrollbar-thumb-gray-00 scrollbar-track-gray-900">
+      <div className="flex-1 p-4 overflow-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
         <AnimatePresence>
           {messages.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center h-full text-gray-800 text-center"
+              className="flex items-center justify-center h-full text-gray-800"
             >
-              <div className="text-4xl mb-4">👋</div>
-              <p className="text-lg mb-2">Hello there!</p>
-              <p>Ask me anything to get started.</p>
+              <img
+                src={Logo}
+                alt="KostHub Logo"
+                className="w-20 h-20 mb-2 object-contain"
+              />
+              <div className="flex flex-col">
+                <p className="text-3xl font-bold text-gray-900">
+                  Hi, I’m KostHub
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  How can I help you?
+                </p>
+              </div>
             </motion.div>
           ) : (
             <div className="flex flex-col space-y-4">
@@ -207,29 +213,18 @@ function VirtualAssistant() {
   );
 }
 
-// Query function to interact with the server
 async function query(data) {
-  try {
-    const response = await fetch(
-      "http://localhost:3000/api/v1/prediction/c5ed765f-cd94-4587-850c-4a5719c0506a",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+  const response = await fetch(
+    "https://flowise-production-f2f7.up.railway.app/api/v1/prediction/68820597-f065-469f-9257-25cd5a00e663",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error("API query failed:", error);
-    throw error;
-  }
+  );
+  const result = await response.json();
+  return result;
 }
-
 export default VirtualAssistant;
