@@ -46,6 +46,7 @@ function Home() {
       mapLogic.addPublicPlacesToMap(publicPlaces);
     }
   });
+  const { focusOnKostMarker } = mapLogic;
 
   const kostData = useKostData(
     (data) => mapLogic.addMarkersToMap(data, navigate),
@@ -197,6 +198,7 @@ function Home() {
         sortOrder={kostData.sortOrder}
         setSortOrder={kostData.setSortOrder}
         ref={sidebarRef}
+        focusOnKostMarker={mapLogic.focusOnKostMarker}
       />
 
       {/* Sidebar Toggle */}

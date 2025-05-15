@@ -32,6 +32,7 @@ function SideBar({
   selectedType,
   sortOrder,
   setSortOrder,
+  focusOnKostMarker,
 }) {
   const sidebarRef = useRef(null);
   const filters = ["Price", "Facilities"];
@@ -471,11 +472,11 @@ function SideBar({
           >
             {sortOrder === "asc" ? (
               <>
-                <SortAsc className="w-4 h-4" /> Price
+                <SortAsc className="w-4 h-4" /> Sort
               </>
             ) : (
               <>
-                <SortDesc className="w-4 h-4" /> Price
+                <SortDesc className="w-4 h-4" /> Sort
               </>
             )}
           </motion.button>
@@ -595,7 +596,10 @@ function SideBar({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <CardKost filteredKost={currentItems} />
+        <CardKost
+          filteredKost={currentItems}
+          focusOnKostMarker={focusOnKostMarker}
+        />
       </motion.div>
 
       {/* Loading indicator */}

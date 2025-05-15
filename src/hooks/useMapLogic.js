@@ -8,6 +8,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
   const markerList = useRef([]);
   const mapInitialized = useRef(false);
   const mapLoaded = useRef(false);
+  const lastOpenedPopup = useRef(null);
 
   // State variables
   const [fullAddress, setFullAddress] = useState("");
@@ -273,6 +274,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
 
         // Mark as kost marker
         marker.isKost = true;
+        marker.customId = kost.id_kost;
 
         marker.setPopup(popup);
 
@@ -368,6 +370,36 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
         markerList.current.push(marker);
       }
     });
+  };
+
+  const focusOnKostMarker = (idKost) => {
+    const marker = markerList.current.find(
+      (m) => m.isKost && m.customId === idKost
+    );
+
+    if (marker) {
+      const lngLat = marker.getLngLat();
+      MapService.flyTo(map.current, [lngLat.lng, lngLat.lat], { zoom: 15 });
+
+      const popup = marker.getPopup();
+
+      // Tutup popup sebelumnya jika terbuka dan berbeda
+      if (
+        lastOpenedPopup.current &&
+        lastOpenedPopup.current !== popup &&
+        lastOpenedPopup.current.isOpen()
+      ) {
+        lastOpenedPopup.current.remove(); // atau togglePopup(), tergantung kebutuhan
+      }
+
+      // Buka popup baru jika belum terbuka
+      if (popup && !popup.isOpen()) {
+        marker.togglePopup();
+        lastOpenedPopup.current = popup;
+      }
+    } else {
+      console.warn(`Marker dengan id_kost ${idKost} tidak ditemukan.`);
+    }
   };
 
   // Add public places markers to map
@@ -511,6 +543,7 @@ export default function useMapLogic(MAP_SERVICE_KEY, initialDataCallback) {
     updateMarkerPosition,
     addMarkersToMap,
     addPublicPlacesToMap,
+    focusOnKostMarker,
     fetchAddressFromCoordinates,
     markerGroups,
     markersVisible,
