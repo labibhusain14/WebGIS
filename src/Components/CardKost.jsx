@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BedDouble, Heart, MapPin, FanIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -50,13 +50,76 @@ function CardKost({ filteredKost, focusOnKostMarker }) {
   const [likedItems, setLikedItems] = useState([]);
   const navigate = useNavigate();
 
-  const toggleLike = (index) => {
-    setLikedItems((prev) => {
-      const updated = [...prev];
-      updated[index] = !updated[index];
-      return updated;
-    });
+  useEffect(() => {
+    const fetchLikedItems = async () => {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) return;
+
+      const parsedUser = JSON.parse(storedUser);
+      const userId = parsedUser?.id_user;
+
+      if (!userId) return;
+
+      try {
+        const res = await fetch(`https://ggnt.mapid.co.id/api/favorites/user/${userId}`);
+        const data = await res.json();
+        if(data && data.data){
+          const likedKostIds = data.data.map((fav) => fav.id_kost);
+
+          // Build a boolean array matching filteredKost
+          const newLikedItems = filteredKost.map((kost) =>
+            likedKostIds.includes(kost.id_kost)
+          );
+
+          setLikedItems(newLikedItems);
+        }
+      } catch (err) {
+        console.error("Failed to fetch liked items:", err);
+      }
+    };
+
+    if (filteredKost.length > 0) {
+      fetchLikedItems();
+    }
+  }, [filteredKost]);
+
+  const toggleLike = async (index, kostId) => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return;
+
+    const parsedUser = JSON.parse(storedUser);
+    const userId = parsedUser?.id_user;
+
+    if (!userId) return;
+
+    try {
+      const response = await fetch("https://ggnt.mapid.co.id/api/favorites/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id_kost: kostId,
+          id_user: userId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to like kost");
+      }
+
+      // Toggle UI like state
+      setLikedItems((prev) => {
+        const updated = [...prev];
+        updated[index] = !updated[index];
+        return updated;
+      });
+    } catch (error) {
+      console.error("Error liking kost:", error);
+      alert("Failed to like kost. Please try again.");
+    }
   };
+
 
   const handleCardClick = (index) => {
     // navigate(`/detail/${filteredKost[index].id_kost}`);
@@ -90,7 +153,7 @@ function CardKost({ filteredKost, focusOnKostMarker }) {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleLike(index);
+                  toggleLike(index, kost.id_kost);
                 }}
                 className="mt-[2px] ml-1" // geser dikit ke atas
               >
