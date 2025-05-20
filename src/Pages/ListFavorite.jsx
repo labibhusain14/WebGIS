@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, BedDouble, FanIcon, MapPin, Heart } from "lucide-react";
 import {
@@ -28,8 +28,8 @@ const kostImage =
 const kosts = [
   {
     id: 1,
-    name: "Kost Mewah A",
-    price: 1200000,
+    nama_kost: "Kost Mewah A",
+    harga_sewa: 1200000,
     luas: "4x5 m",
     tipe: "Putri",
     lokasi: "Bandung",
@@ -37,8 +37,8 @@ const kosts = [
   },
   {
     id: 2,
-    name: "Kost Nyaman B",
-    price: 950000,
+    nama_kost: "Kost Nyaman B",
+    harga_sewa: 950000,
     luas: "3x4 m",
     tipe: "Campur",
     lokasi: "Jakarta",
@@ -46,8 +46,8 @@ const kosts = [
   },
   {
     id: 3,
-    name: "Kost Nyaman B",
-    price: 950000,
+    nama_kost: "Kost Nyaman B",
+    harga_sewa: 950000,
     luas: "3x4 m",
     tipe: "Campur",
     lokasi: "Jakarta",
@@ -55,8 +55,8 @@ const kosts = [
   },
   {
     id: 4,
-    name: "Kost Nyaman B",
-    price: 950000,
+    nama_kost: "Kost Nyaman B",
+    harga_sewa: 950000,
     luas: "3x4 m",
     tipe: "Campur",
     lokasi: "Jakarta",
@@ -144,19 +144,81 @@ const FavoriteKosts = () => {
   const [selectedCity, setSelectedCity] = useState("semua");
   const [isOpen, setIsOpen] = useState(false);
   const [favoritIds, setFavoritIds] = useState([]);
+  const [kosts, setKosts] = useState([]); // full kost data
+
+  const fetchFavoriteKosts = async () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      const user = JSON.parse(storedUser);
+      const id_user = user?.id_user;
+
+      if (!id_user) return;
+
+      const res = await fetch(`https://ggnt.mapid.co.id/api/favorites/user/${id_user}`);
+      const json = await res.json();
+
+      const favoriteKosts = json?.data || [];
+
+      setKosts(favoriteKosts);
+      setFavoritIds(favoriteKosts.map((kost) => kost.id_kost));
+    } catch (error) {
+      console.error("Failed to fetch favorite kosts:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFavoriteKosts();
+  }, []);
+
 
   const selectedLabel = cities.find((c) => c.value === selectedCity)?.label;
   const goBack = () => navigate(-1);
 
-  const filteredKosts = kosts.filter((kost) =>
-    kost.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredKosts = kosts.filter(
+    (kost) =>
+      kost.nama_kost.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedCity.toLowerCase() === "semua" || kost.alamat.toLowerCase() === selectedCity.toLowerCase())
   );
-  const toggleFavorit = (kostId) => {
-    setFavoritIds((prev) =>
-      prev.includes(kostId)
-        ? prev.filter((id) => id !== kostId)
-        : [...prev, kostId]
-    );
+
+  const toggleFavorit = async (kostId) => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return;
+
+    const parsedUser = JSON.parse(storedUser);
+    const userId = parsedUser?.id_user;
+
+    if (!userId) return;
+
+    const isFavorited = favoritIds.includes(kostId);
+
+    if (isFavorited) {
+      const confirmed = window.confirm("Apakah kamu yakin ingin menghapus kost dari favorit?");
+      if (!confirmed) return;
+
+      try {
+        const response = await fetch("https://ggnt.mapid.co.id/api/favorites/", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_kost: kostId,
+            id_user: userId,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Gagal menghapus favorit");
+        }
+
+        // setFavoritIds((prev) => prev.filter((id) => id !== kostId));
+        // Re-fetch updated kosts
+        await fetchFavoriteKosts();
+      } catch (error) {
+        console.error("Gagal menghapus kost dari favorit:", error);
+        alert("Terjadi kesalahan saat menghapus favorit.");
+      }
+    }
   };
 
   return (
@@ -307,19 +369,19 @@ const FavoriteKosts = () => {
                   >
                     <img
                       src={kostImage}
-                      alt={kost.name}
+                      alt={kost.nama_kost}
                       className={`object-cover w-full ${
                         viewMode === "list" ? "h-full max-h-48" : "h-48"
                       }`}
                     />
                     <div className="absolute top-3 right-3">
                       <button
-                        onClick={() => toggleFavorit(kost.id)}
+                        onClick={() => toggleFavorit(kost.id_kost)}
                         className="bg-white rounded-full p-2 shadow-md hover:bg-blue-50 transition"
                       >
                         <Heart
                           className={`w-5 h-5 ${
-                            favoritIds.includes(kost.id)
+                            favoritIds.includes(kost.id_kost)
                               ? "text-blue-500 fill-blue-500"
                               : "text-gray-400"
                           }`}
@@ -334,12 +396,12 @@ const FavoriteKosts = () => {
                   >
                     <div>
                       <h3 className="text-lg font-semibold text-gray-800">
-                        {kost.name}
+                        {kost.nama_kost}
                       </h3>
 
                       <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
                         <MapPin className="text-blue-500 h-4 w-4" />
-                        {kost.lokasi}
+                        {kost.alamat}
                       </div>
                       {viewMode === "list" ? (
                         <>
@@ -410,13 +472,18 @@ const FavoriteKosts = () => {
                       )}
                     </div>
                     <p className="text-blue-500 text-xl font-bold">
-                      Rp{kost.price.toLocaleString("id-ID")}
+                      Rp{kost.harga_sewa.toLocaleString("id-ID")}
                       <span className="text-sm text-gray-500 font-semibold">
                         {" "}
                         / bulan
                       </span>
                     </p>
                     <button
+                      id={`detail-btn-${kost.id_kost}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/detail/${kost.id_kost}`);
+                      }}
                       className={`${
                         viewMode === "list"
                           ? "sm:absolute sm:bottom-4 sm:right-4 mt-4 sm:mt-0"
