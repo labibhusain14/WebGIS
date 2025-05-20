@@ -28,7 +28,7 @@ const kostImage =
 const kosts = [
   {
     id: 1,
-    name: "Kost Mewah A",
+    name: "Kost Mewah A Kost Mewah A Kost Mewah A Kost Mewah A",
     price: 1200000,
     luas: "4x5 m",
     tipe: "Putri",
