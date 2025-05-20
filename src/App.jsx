@@ -1,19 +1,20 @@
-import { Routes, Route } from 'react-router-dom';
-import Navigator from './Pages/Navigator';
-import Marker from './Pages/Marker';
-import Points from './Pages/Points';
-import Line from './Pages/Line';
-import Polygon from './Pages/Polygon';
-import Home from './Pages/Home';
-import Beranda from './Pages/Beranda';
-import DetailPage from './Pages/Detail';
-import LoginPage from './Pages/Login';
-import MarketIntelligenceDashboard from './Pages/Dashboard';
-import HelpCenterPage from './Pages/HelpCenter';
-import AboutUsPage from './Pages/AboutUs';
-import RegisterPage from './Pages/Register';
-import ProtectedLayout from './Pages/ProtectedLayout';
-import LandingPage from './Pages/Landing';
+import { Routes, Route } from "react-router-dom";
+import Navigator from "./Pages/Navigator";
+import Marker from "./Pages/Marker";
+import Points from "./Pages/Points";
+import Line from "./Pages/Line";
+import Polygon from "./Pages/Polygon";
+import Home from "./Pages/Home";
+import Beranda from "./Pages/Beranda";
+import DetailPage from "./Pages/Detail";
+import LoginPage from "./Pages/Login";
+import MarketIntelligenceDashboard from "./Pages/Dashboard";
+import HelpCenterPage from "./Pages/HelpCenter";
+import AboutUsPage from "./Pages/AboutUs";
+import RegisterPage from "./Pages/Register";
+import ProtectedLayout from "./Pages/ProtectedLayout";
+import LandingPage from "./Pages/Landing";
+import FavoriteKosts from "./Pages/ListFavorite";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/dashboard" element={<MarketIntelligenceDashboard />} />
         <Route path="/home" element={<Home />} />
         <Route path="/detail/:id" element={<DetailPage />} />
+        <Route path="/favorites/" element={<FavoriteKosts />} />
       </Route>
     </Routes>
   );
