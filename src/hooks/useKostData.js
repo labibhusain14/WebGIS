@@ -3,6 +3,7 @@ import KostDataService from '../service/KostDataService';
 
 export default function useKostData(addMarkersToMap, navigate) {
   const initialDataFetched = useRef(false);
+  const cacheChecked = useRef(false);
 
   // State variables
   const [loading, setLoading] = useState(false);
@@ -19,17 +20,30 @@ export default function useKostData(addMarkersToMap, navigate) {
   const [selectedType, setSelectedType] = useState([]);
   const [sortOrder, setSortOrder] = useState('asc');
 
-  // Fetch kost data
   const fetchDataKost = async (reset = false) => {
     if (loading || (!hasMore && !reset)) return;
 
     setLoading(true);
-    console.log('Fetching kost data...');
+    
     initialDataFetched.current = true;
-
+    
     try {
-      // Use the service to fetch data
-      const data = await KostDataService.fetchKostData(reset ? 0 : skip, 800, false);
+      console.log(`Fetching kost data... ${reset ? '(reset)' : ''} skip=${reset ? 0 : skip}`);
+      
+      if (reset) {
+        KostDataService.clearCache();
+        cacheChecked.current = false;
+      }
+      
+      const useCache = !cacheChecked.current && (reset || skip === 0);
+      cacheChecked.current = true;
+      
+      const data = await KostDataService.fetchKostData(
+        reset ? 0 : skip,
+        800,
+        useCache
+      );
+      
       console.log('Data received:', data.length, 'items');
 
       const newData = reset ? data : [...originalKostList, ...data];
@@ -49,8 +63,6 @@ export default function useKostData(addMarkersToMap, navigate) {
       setHasMore(data.length === 20);
       setIsDataReady(true);
 
-      // The map display is now handled in the Home component
-      // when both isDataReady and isMapReady are true
     } catch (err) {
       console.error('Failed to fetch kost data:', err);
     } finally {
@@ -70,11 +82,19 @@ export default function useKostData(addMarkersToMap, navigate) {
       });
 
       setFilteredKost(filtered);
-
-      // The map display is now handled in the Home component
-      // We don't call addMarkersToMap here directly
     }
   }, [searchTerm, priceRange, selectedFacilities, selectedType, sortOrder]);
+
+  // Force refresh data from API
+  const refreshData = async () => {
+    KostDataService.clearCache();
+    cacheChecked.current = false;
+    
+    setSkip(0);
+    setHasMore(true);
+    
+    return fetchDataKost(true);
+  };
 
   return {
     loading,
@@ -94,6 +114,7 @@ export default function useKostData(addMarkersToMap, navigate) {
     sortOrder,
     setSortOrder,
     fetchDataKost,
+    refreshData,
     setFilteredKost,
   };
 }

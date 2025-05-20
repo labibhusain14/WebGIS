@@ -292,24 +292,19 @@ const HelpCenterPage = () => {
       {/* Footer */}
       <footer className="bg-white mt-12 py-8 border-t border-gray-200">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <motion.div className="mb-4 md:mb-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>
+          <div className="flex justify-center">
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+            >
               <p className="text-gray-600">&copy; 2025 KostHub. All rights reserved.</p>
-            </motion.div>
-            <motion.div className="flex space-x-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
-              <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">
-                Syarat Penggunaan
-              </a>
-              <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">
-                Kebijakan Privasi
-              </a>
-              <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">
-                FAQ
-              </a>
             </motion.div>
           </div>
         </div>
       </footer>
+
     </div>
   );
 };

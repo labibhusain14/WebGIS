@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Heart, Eye, Home, Ruler, MapPin, ArrowLeft } from 'lucide-react';
 import { Button } from '../Components/Button';
+import Navbar from '../Components/Navbar';
 
 const DetailPage = () => {
   const { id } = useParams();
@@ -120,7 +121,8 @@ const DetailPage = () => {
   return (
     <div className="bg-gray-100 min-h-screen p-4 md:p-6">
       {/* Back Button */}
-      <div className="container mx-auto max-w-6xl mb-4">
+      <Navbar />
+      <div className="container mx-auto max-w-6xl mt-20">
         <Button onClick={goBack} className="flex items-center text-gray-600 hover:text-blue-600 transition duration-200 mb-4 bg-white px-4 py-2 rounded-lg shadow-sm">
           <ArrowLeft size={18} className="mr-2" /> Back to listings
         </Button>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Menu, MapPin, Layers, Eye, EyeOff, X, ChevronUp } from "lucide-react";
+import { Menu, MapPin, Layers, Eye, EyeOff, X, ChevronUp, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
 import SideBar from "../Components/SideBar";
@@ -171,6 +171,20 @@ function Home() {
     }
   };
 
+  const handleForceRefresh = () => {
+  setIsLoading(true);
+  kostData.refreshData().then(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+      
+      // Refresh map markers if map is ready
+      if (mapReadyRef.current && kostData.filteredKost.length > 0) {
+        mapLogic.addMarkersToMap(kostData.filteredKost, navigate);
+      }
+    }, 1000);
+  });
+};
+
   return (
     <div className="relative h-screen">
       {isLoading && <LoadingAnimation duration={4000} />}
@@ -224,6 +238,17 @@ function Home() {
           whileTap={{ scale: 0.9 }}
         >
           <Layers className="w-5 h-5" />
+        </motion.button>
+
+        {/* Force Refresh Button - Add this */}
+        <motion.button
+          onClick={handleForceRefresh}
+          className="bg-gray-800 text-white p-2 rounded-md flex items-center gap-1 hover:bg-gray-700"
+          title="Force Refresh Data"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <RefreshCw className="w-5 h-5" />
         </motion.button>
       </div>
 

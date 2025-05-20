@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Globe, Users, Award, Map, Compass, Code, ChevronRight, MapPin, Mail, Phone, Heart, Star, Check, Coffee, ArrowRight } from 'lucide-react';
+import { Globe, Users, Award, Map, Compass, Code, ChevronRight, MapPin, Mail, Phone, Heart, Star, Check, Coffee, ArrowRight, Square } from 'lucide-react';
 import Navbar from '../Components/Navbar';
+import ProfileImg1 from '../assets/about/profile-1.jpg';
+import ProfileImg2 from '../assets/about/profile-2.jpg';
+import ProfileImg3 from '../assets/about/profile-3.jpg';
+import ProfileImg4 from '../assets/about/profile-4.jpg';
+import ProfileImg5 from '../assets/about/profile-5.jpg';
+import ProfileImg6 from '../assets/about/profile-6.jpg';
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -22,21 +28,21 @@ const Solutions = () => {
   const solutions = [
     {
       title: 'Pencarian Kos Berbasis Peta',
-      description: 'Platform WebGIS interaktif yang memungkinkan pencarian kos berdasarkan lokasi, akses ke transportasi, fasilitas sekitar, dan preferensi pribadi. Gunakan filter radius untuk menemukan kos ideal sesuai kebutuhan Anda.',
+      description: 'Platform WebGIS interaktif yang memungkinkan pencarian kos berdasarkan lokasi, akses ke transportasi, fasilitas sekitar, dan preferensi pribadi.',
       icon: <Globe className="w-12 h-12 text-blue-600" />,
       color: 'bg-blue-50',
       iconColor: 'text-blue-600',
     },
     {
       title: 'Smart Budgeting',
-      description: 'Fitur AI yang membantu merencanakan dan mengelola budget hunian, memprediksi pengeluaran, dan memberikan rekomendasi keuangan personal. Dapatkan notifikasi ketika ada penawaran khusus sesuai budget Anda.',
+      description: 'Fitur AI yang membantu merencanakan dan mengelola budget hunian, memprediksi pengeluaran, dan memberikan rekomendasi keuangan personal.',
       icon: <Code className="w-12 h-12 text-green-600" />,
       color: 'bg-green-50',
       iconColor: 'text-green-600',
     },
     {
       title: 'Asisten Kos Chatbot',
-      description: 'Asisten virtual berbasis AI yang siap membantu menjawab pertanyaan, memberikan rekomendasi, dan memandu proses pencarian kos 24/7. Dapatkan jawaban instan untuk semua kebutuhan kos Anda.',
+      description: 'Asisten virtual berbasis AI yang siap membantu menjawab pertanyaan, memberikan rekomendasi, dan memandu proses pencarian kos 24/7.',
       icon: <Users className="w-12 h-12 text-purple-600" />,
       color: 'bg-purple-50',
       iconColor: 'text-purple-600',
@@ -52,18 +58,33 @@ const Solutions = () => {
         </motion.div>
 
         <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8" variants={staggerContainer}>
-          {solutions.map((solution, index) => (
-            <motion.div key={index} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300" variants={fadeInUp} whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}>
-              <div className={`${solution.color} p-5 rounded-full inline-block mb-6`}>{solution.icon}</div>
+        {solutions.map((solution, index) => (
+          <motion.div
+            key={index}
+            className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+            variants={fadeInUp}
+            whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+          >
+            <div>
+              <div className={`${solution.color} p-5 rounded-full inline-block mb-6`}>
+                {solution.icon}
+              </div>
               <h3 className="text-2xl font-bold mb-4 text-blue-900">{solution.title}</h3>
               <p className="text-gray-700 mb-6 leading-relaxed">{solution.description}</p>
-              <motion.a href="#" className={`inline-flex items-center font-medium ${solution.iconColor} hover:underline`} whileHover={{ x: 5 }}>
-                <span className="mr-2">Pelajari lebih lanjut</span>
-                <ChevronRight className="w-5 h-5" />
-              </motion.a>
-            </motion.div>
-          ))}
-        </motion.div>
+            </div>
+
+            <motion.a
+              href="#"
+              className={`inline-flex items-center font-medium ${solution.iconColor} hover:underline mt-auto`}
+              whileHover={{ x: 5 }}
+            >
+              <span className="mr-2">Pelajari lebih lanjut</span>
+              <ChevronRight className="w-5 h-5" />
+            </motion.a>
+          </motion.div>
+        ))}
+      </motion.div>
+
       </div>
     </motion.div>
   );
@@ -75,37 +96,37 @@ const Team = () => {
       name: 'Muhammad Rizki',
       position: 'Project Leader',
       bio: 'Mahasiswa Ilmu Komputer UPI 2021, Memiliki minat di software development & Artificial intelligence',
-      image: 'https://media.licdn.com/dms/image/v2/D5603AQEZQH6sOG5naw/profile-displayphoto-shrink_800_800/B56ZV0lGyGGoAc-/0/1741417639885?e=1750896000&v=beta&t=7nVYM5a9qd48iJmBwe1YlVxc1-FS5ciZ6WUtBZuNdLc',
+      image: ProfileImg1,
     },
     {
       name: 'Ihsan Ghozi Zulfikar',
       position: 'Backend Developer',
       bio: 'Mahasiswa Ilmu Komputer UPI 2021, fokus di pengembangan API dan backend.',
-      image: 'https://media.licdn.com/dms/image/v2/D5603AQGf91A1H7mDKA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1700967413391?e=1750896000&v=beta&t=9QwSmEUmFkIxbt59Uu9AQyAVv15aHQGbChTxlSELTbE',
+      image: ProfileImg2,
     },
     {
       name: 'Ade Mulyana',
       position: 'Frontend Developer',
-      bio: 'Mahasiswa Ilmu Komputer UPI 2021, tertarik dalam UI/UX dan pengembangan antarmuka pengguna.',
-      image: 'https://media.licdn.com/dms/image/v2/D5603AQGeLk6cp3dcdg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725885567904?e=1750896000&v=beta&t=EW8USzkVzWqXcw9ypq7e3r1g83xlWpUK_JWpatOgWdw',
+      bio: 'Mahasiswa Ilmu Komputer UPI 2021, fokus dalam UI/UX dan pengembangan antarmuka pengguna.',
+      image: ProfileImg3,
     },
     {
       name: 'Bayu Wicaksono',
       position: 'ML Engineer',
       bio: 'Mahasiswa Ilmu Komputer UPI 2021, mendalami machine learning untuk pengembangan fitur rekomendasi.',
-      image: 'https://media.licdn.com/dms/image/v2/D5603AQEtlobG5x8QBg/profile-displayphoto-shrink_800_800/B56ZQ6fie7HoAc-/0/1736148134351?e=1750896000&v=beta&t=g_T0usPEmxnvSkK3YfY8-G900FjfSXCt454WEVXBwQM',
+      image: ProfileImg4,
     },
     {
       name: 'Mohammad Labib Husain',
       position: 'UI/UX Designer',
       bio: 'Mahasiswa Ilmu Komputer UPI 2021, fokus pada desain berbasis user experience.',
-      image: 'https://avatars.githubusercontent.com/u/119772365?v=4',
+      image: ProfileImg5,
     },
     {
       name: 'Siti Milatu Diniah',
       position: 'Geospatial Data Analyst',
       bio: 'Mahasiswa Pendidikan Geografi UPI 2022, berfokus pada analisis data spasial dan pemetaan.',
-      image: 'https://media.licdn.com/dms/image/v2/D4E03AQFvOXDPjIHkcw/profile-displayphoto-shrink_800_800/B4EZTK9EoWHUAk-/0/1738571795591?e=1750896000&v=beta&t=VHg3bSzDKBnRi0ZD-_Xr-I2-p4eUaEMPpDLLDHVIoyo',
+      image: ProfileImg6,
     },
   ];
 
@@ -473,7 +494,7 @@ const AboutUsPage = () => {
               KostHub Solutions
             </motion.h1>
             <motion.p className="text-xl md:text-2xl mb-8 text-blue-100" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.8 }}>
-              Temukan kos ideal dengan teknologi pemetaan cerdas dan AI
+              Temukan kos ideal di Kota Bandung dengan teknologi pemetaan cerdas dan AI
             </motion.p>
             <motion.div className="flex items-center space-x-2 text-blue-200" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.8 }}>
               <Globe className="w-5 h-5" />
@@ -499,10 +520,10 @@ const AboutUsPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { value: '10,000+', label: 'Pencari Kos', icon: <Users className="w-6 h-6 text-blue-500 mx-auto mb-2" /> },
-              { value: '5,000+', label: 'Kos Terdaftar', icon: <MapPin className="w-6 h-6 text-blue-500 mx-auto mb-2" /> },
-              { value: '25+', label: 'Kota', icon: <Map className="w-6 h-6 text-blue-500 mx-auto mb-2" /> },
-              { value: '99%', label: 'Kepuasan Pengguna', icon: <Heart className="w-6 h-6 text-blue-500 mx-auto mb-2" /> },
+              { value: '1000+', label: 'Kos Terdaftar', icon: <MapPin className="w-6 h-6 text-blue-500 mx-auto mb-2" /> },
+              { value: '25+', label: 'Kecamatan', icon: <Map className="w-6 h-6 text-blue-500 mx-auto mb-2" /> },
+              { value: '11.7 m²', label: 'Rata-rata Luas Kos', icon: <Square className="w-6 h-6 text-blue-500 mx-auto mb-2" /> },
+              { value: 'Mulai Rp400rb', label: 'Harga Kos', icon: <Star className="w-6 h-6 text-blue-500 mx-auto mb-2" /> },
             ].map((stat, index) => (
               <motion.div key={index} className="p-4" whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 400, damping: 10 }}>
                 {stat.icon}
@@ -733,9 +754,25 @@ const AboutUsPage = () => {
         <Contact />
       </div>
 
+       {/* Footer */}
+      <footer className="bg-white mt-12 py-8 border-t border-gray-200">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex justify-center">
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+            >
+              <p className="text-gray-600">&copy; 2025 KostHub. All rights reserved.</p>
+            </motion.div>
+          </div>
+        </div>
+      </footer>
+
       {/* Footer */}
 
-      <footer className="bg-gray-100 py-6 border-t border-gray-200">
+      {/* <footer className="bg-gray-100 py-6 border-t border-gray-200">
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
@@ -743,7 +780,7 @@ const AboutUsPage = () => {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };

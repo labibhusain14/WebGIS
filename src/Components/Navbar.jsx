@@ -1,7 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import { FiLogOut, FiMenu, FiX, FiUser, FiHome, FiHelpCircle, FiInfo, FiBarChart } from 'react-icons/fi';
+import { FiLogOut, FiMenu, FiX, FiUser, FiHome, FiHelpCircle, FiInfo, FiBarChart,  } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
+import {FiChevronDown} from 'react-icons/fi';
 import Logo from '../assets/Logo.png';
 
 const Navbar = () => {
@@ -80,6 +81,9 @@ const Navbar = () => {
     setLoading(true);
     setTimeout(() => {
       localStorage.removeItem('user');
+      localStorage.removeItem('token')
+      localStorage.removeItem('KOST_DATA_CACHE');
+      localStorage.removeItem('KOST_DATA_CACHE_TIMESTAMP');
       setLoading(false);
       navigate('/login');
     }, 1500);
@@ -214,6 +218,7 @@ const Navbar = () => {
                     className="w-8 h-8 rounded-full object-cover aspect-square border-2 border-blue-500"
                   />
                   <div className="text-base text-gray-800 font-semibold">{userName}</div>
+                  <FiChevronDown className={`text-lg text-gray-500 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
                 </motion.div>
 
                 <AnimatePresence>
