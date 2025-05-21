@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import CardKost from "./CardKost";
+import UserGuide from "./UserGuide";
 import PropTypes from "prop-types";
 
 function SideBar({
@@ -33,6 +34,7 @@ function SideBar({
   sortOrder,
   setSortOrder,
   focusOnKostMarker,
+  isLoading,
 }) {
   const sidebarRef = useRef(null);
   const filters = ["Price", "Facilities"];
@@ -214,7 +216,7 @@ function SideBar({
       variants={sidebarVariants}
       className="fixed top-[64px] h-[calc(100vh-61px)] w-full max-w-[450px] bg-gray-50 z-40 border-r border-gray-200 overflow-y-auto shadow-lg"
     >
-      {/* Close button for mobile */}
+      <UserGuide isLoading={isLoading} /> {/* Close button for mobile */}
       <div className="w-full flex justify-end p-3 md:hidden">
         <motion.button
           onClick={toggleSidebar}
@@ -225,7 +227,6 @@ function SideBar({
           <ChevronLeft className="w-5 h-5" />
         </motion.button>
       </div>
-
       {/* Search bar */}
       <motion.div
         className="mt-2 flex justify-center w-[90%] mx-auto mb-4"
@@ -235,18 +236,19 @@ function SideBar({
       >
         <div className="relative w-full">
           <input
+            id="search"
             type="text"
             placeholder="Search location..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full py-3 px-4 pl-10 rounded-lg bg-white border border-gray-300 shadow-sm outline-none text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full py-3 px-4 pl-10 rounded-lg bg-white border border-gray-300 shadow-sm outline-none text-gray-700 focus:ring-2 focus:ring-blue-500 mt-2 focus:border-transparent transition-all"
           />
           <Search className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
         </div>
       </motion.div>
-
       {/* Filter section */}
       <motion.div
+        id="filter"
         className="w-[90%] mx-auto bg-white rounded-lg shadow-md p-4 mb-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -254,7 +256,18 @@ function SideBar({
       >
         <div className="flex flex-wrap justify-center gap-2">
           {filters.map((label) => (
-            <div key={label} className="relative dropdown-container">
+            <div
+              key={label}
+              className="relative dropdown-container"
+              id={
+                label === "Price"
+                  ? "price"
+                  : label === "Facilities"
+                  ? "fasilitas"
+                  : ""
+              }
+            >
+              {" "}
               <motion.button
                 onClick={() => toggleDropdown(label)}
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all ${
@@ -273,7 +286,6 @@ function SideBar({
                   <ChevronDown className="w-4 h-4 ml-2" />
                 </motion.div>
               </motion.button>
-
               <AnimatePresence>
                 {openDropdown === label && (
                   <motion.div
@@ -482,7 +494,6 @@ function SideBar({
           </motion.button>
         </div>
       </motion.div>
-
       {/* Active filters display */}
       <AnimatePresence>
         {(selectedFacilities.length > 0 ||
@@ -575,7 +586,6 @@ function SideBar({
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* Results count */}
       <motion.div
         className="w-[90%] mx-auto mb-2"
@@ -588,7 +598,6 @@ function SideBar({
           {filteredKost.length === 1 ? "property" : "properties"} found
         </p>
       </motion.div>
-
       {/* Card listing */}
       <motion.div
         className="w-[90%] mx-auto"
@@ -601,7 +610,6 @@ function SideBar({
           focusOnKostMarker={focusOnKostMarker}
         />
       </motion.div>
-
       {/* Loading indicator */}
       <AnimatePresence>
         {loading && (
@@ -620,7 +628,6 @@ function SideBar({
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* Pagination controls */}
       <AnimatePresence>
         {filteredKost.length > 0 && (
@@ -674,7 +681,6 @@ function SideBar({
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* No results message */}
       <AnimatePresence>
         {filteredKost.length === 0 && !loading && (
@@ -701,7 +707,6 @@ function SideBar({
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* Footer spacing */}
       <div className="h-4"></div>
     </motion.div>

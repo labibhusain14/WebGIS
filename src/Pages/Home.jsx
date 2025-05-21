@@ -11,6 +11,7 @@ import AddressInput from "../Components/SmartBudgeting/AddressInput";
 import useMapLogic from "../hooks/useMapLogic";
 import useKostData from "../hooks/useKostData";
 import publicPlaces from "../data/public_places.json";
+import UserGuide from "../Components/UserGuide";
 
 function Home() {
   const MAP_SERVICE_KEY = import.meta.env.VITE_MAP_SERVICE_KEY;
@@ -172,7 +173,7 @@ function Home() {
   };
 
   return (
-    <div className="relative h-screen">
+    <div className="body relative h-screen">
       {isLoading && <LoadingAnimation duration={4000} />}
       <Navbar />
 
@@ -199,6 +200,7 @@ function Home() {
         setSortOrder={kostData.setSortOrder}
         ref={sidebarRef}
         focusOnKostMarker={mapLogic.focusOnKostMarker}
+        isLoading={isLoading}
       />
 
       {/* Sidebar Toggle */}
