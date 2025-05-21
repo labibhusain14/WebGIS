@@ -57,7 +57,10 @@ function AIFeatures({ budgetParams, setBudgetParams, fullAddress }) {
   };
 
   return (
-    <div className="fixed top-[90px] right-14 z-10 flex items-center space-x-2">
+    <div
+      id="fiturAI"
+      className="fixed top-[90px] right-14 z-10 flex items-center space-x-2"
+    >
       <AnimatePresence>
         {showTooltip && (
           <motion.div

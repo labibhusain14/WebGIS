@@ -213,7 +213,10 @@ function CardKost({ filteredKost, focusOnKostMarker }) {
         </div>
       )}
 
-      <div className="w-[98%] my-5 flex flex-wrap gap-4 justify-center">
+      <div
+        id="kost"
+        className="w-[98%] my-5 flex flex-wrap gap-4 justify-center"
+      >
         {filteredKost.map((kost, index) => (
           <div
             key={kost.id_kost}

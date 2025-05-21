@@ -216,7 +216,6 @@ function SideBar({
       variants={sidebarVariants}
       className="fixed top-[64px] h-[calc(100vh-61px)] w-full max-w-[450px] bg-gray-50 z-40 border-r border-gray-200 overflow-y-auto shadow-lg"
     >
-      <UserGuide isLoading={isLoading} /> {/* Close button for mobile */}
       <div className="w-full flex justify-end p-3 md:hidden">
         <motion.button
           onClick={toggleSidebar}

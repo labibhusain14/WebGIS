@@ -21,6 +21,9 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #718096; /* Warna saat hover */
 }
+body.joyride-disable-scroll {
+  overflow: auto !important;
+}
 
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
