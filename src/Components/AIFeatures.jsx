@@ -57,14 +57,17 @@ function AIFeatures({ budgetParams, setBudgetParams, fullAddress }) {
   };
 
   return (
-    <div className="fixed top-[90px] right-14 z-10 flex items-center space-x-2">
+    <div
+      id="fiturAI"
+      className="fixed top-[90px] right-14 z-10 flex items-center space-x-2"
+    >
       <AnimatePresence>
         {showTooltip && (
           <motion.div
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 10 }}
-            className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white text-xs p-3 rounded-lg max-w-xs hidden sm:block shadow-lg"
+            className="relative bg-gradient-to-r from-yellow-600 to-yellow-800 text-white text-xs p-3 rounded-lg max-w-xs hidden sm:block shadow-lg"
           >
             <span className="font-medium">New!</span> Try our AI features
             <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-8 border-t-8 border-b-8 border-transparent border-l-blue-600" />
@@ -108,7 +111,7 @@ function AIFeatures({ budgetParams, setBudgetParams, fullAddress }) {
 
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
-          className="relative z-10 flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-800 text-white
+          className="relative z-10 flex items-center justify-center bg-gradient-to-r from-yellow-600 to-yellow-800 text-white
                    p-3 rounded-full shadow-lg transition-all"
           title="AI Features"
           animate={controls}

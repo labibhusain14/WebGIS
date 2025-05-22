@@ -115,10 +115,10 @@ function VirtualAssistant() {
               />
               <div className="flex flex-col">
                 <p className="text-3xl font-bold text-gray-900">
-                  Hi, I’m KostHub
+                  Hai, saya KostHub
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
-                  How can I help you?
+                  Saya siap bantu temukan kost terbaik untukmu.{" "}
                 </p>
               </div>
             </motion.div>

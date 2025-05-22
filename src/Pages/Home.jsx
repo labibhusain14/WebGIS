@@ -11,6 +11,7 @@ import AddressInput from "../Components/SmartBudgeting/AddressInput";
 import useMapLogic from "../hooks/useMapLogic";
 import useKostData from "../hooks/useKostData";
 import publicPlaces from "../data/public_places.json";
+import UserGuide from "../Components/UserGuide";
 
 function Home() {
   const MAP_SERVICE_KEY = import.meta.env.VITE_MAP_SERVICE_KEY;
@@ -186,10 +187,9 @@ function Home() {
 };
 
   return (
-    <div className="relative h-screen">
+    <div className="body relative h-screen">
       {isLoading && <LoadingAnimation duration={4000} />}
       <Navbar />
-
       <SideBar
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
@@ -213,10 +213,11 @@ function Home() {
         setSortOrder={kostData.setSortOrder}
         ref={sidebarRef}
         focusOnKostMarker={mapLogic.focusOnKostMarker}
+        isLoading={isLoading}
       />
-
       {/* Sidebar Toggle */}
       <motion.button
+        id="sidebar"
         onClick={toggleSidebar}
         className={`fixed top-[75px] transition-all duration-[600ms] ${
           isSidebarOpen ? "left-[450px]" : "left-0"
@@ -226,9 +227,11 @@ function Home() {
       >
         <Menu className="w-5 h-5" />
       </motion.button>
-
       {/* Map Controls Group */}
-      <div className="fixed top-[90px] right-2 z-10 flex flex-col gap-2">
+      <div
+        id="layer"
+        className="fixed top-[90px] right-2 z-10 flex flex-col gap-2"
+      >
         {/* Map Legend Toggle Button */}
         <motion.button
           onClick={toggleLegend}
@@ -251,7 +254,6 @@ function Home() {
           <RefreshCw className="w-5 h-5" />
         </motion.button>
       </div>
-
       {/* Map Legend Panel - Positioned with improved styling */}
       <AnimatePresence>
         {isLegendOpen && (
@@ -345,9 +347,9 @@ function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* Address Input Panel */}
       <motion.div
+        id="cariAlamat"
         className="absolute top-[75px] left-0 right-0 z-10 mx-auto hidden w-[95%] max-w-md rounded-lg bg-white bg-opacity-95 pt-2 px-4 shadow-lg md:block"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -368,7 +370,6 @@ function Home() {
           </motion.div>
         )}
       </motion.div>
-
       {/* Full Address Display */}
       <AnimatePresence>
         {mapLogic.fullAddress && (
@@ -389,7 +390,6 @@ function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* AI Features Component */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -402,7 +402,6 @@ function Home() {
           fullAddress={mapLogic.fullAddress}
         />
       </motion.div>
-
       {/* Scroll to top button for sidebar */}
       <AnimatePresence>
         {showToTop && isSidebarOpen && (
@@ -419,7 +418,6 @@ function Home() {
           </motion.button>
         )}
       </AnimatePresence>
-
       <div ref={mapLogic.mapContainer} className="flex-1 h-screen" />
     </div>
   );
