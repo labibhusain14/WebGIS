@@ -122,14 +122,14 @@ const DetailPage = () => {
     <div className="bg-gray-100 min-h-screen p-4 md:p-6">
       {/* Back Button */}
       <Navbar />
-      <div className="container mx-auto max-w-6xl mt-20">
+      {/* <div className="container mx-auto max-w-6xl mt-20">
         <Button onClick={goBack} className="flex items-center text-gray-600 hover:text-blue-600 transition duration-200 mb-4 bg-white px-4 py-2 rounded-lg shadow-sm">
           <ArrowLeft size={18} className="mr-2" /> Back to listings
         </Button>
-      </div>
+      </div> */}
 
       {/* Main Card */}
-      <div className="container mx-auto max-w-6xl bg-white rounded-lg overflow-hidden shadow-lg">
+      <div className="container mx-auto max-w-6xl bg-white rounded-lg overflow-hidden shadow-lg mt-20">
         {/* Hero Image Section */}
         <div className="relative">
           <img src={images[0]?.src || property.image} alt={property.nama_kost} className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover" />

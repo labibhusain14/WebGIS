@@ -76,7 +76,7 @@ class KostDataService {
    * @param {boolean} checkCache - Whether to check cache first
    * @returns {Promise<Array>} - Kost data
    */
-  async fetchKostData(skip = 0, limit = 800, checkCache = true) {
+  async fetchKostData(skip = 0, limit = 1473, checkCache = true) {
     if (skip === 0 && checkCache) {
       const cachedData = this.getCachedData();
       if (cachedData) {
@@ -121,7 +121,7 @@ class KostDataService {
       const matchFacilities = selectedFacilities.length === 0 || selectedFacilities.every((fac) => kost.fasilitas.some((f) => f.nama_fasilitas === fac));
       const matchType = selectedType.length === 0 || selectedType.includes(kost.tipe_kost);
 
-      return nameSearch && matchSearch && matchPrice && matchFacilities && matchType;
+      return (nameSearch || matchSearch) && matchPrice && matchFacilities && matchType;
     });
 
     return filtered.sort((a, b) => (sortOrder === 'asc' ? a.harga_sewa - b.harga_sewa : b.harga_sewa - a.harga_sewa));
