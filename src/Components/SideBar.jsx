@@ -47,6 +47,7 @@ function SideBar({
   // Price range state for the slider
   const [localPriceRange, setLocalPriceRange] = useState(priceRange);
   const maxPriceValue = 10000000; // Max price set to 10 million IDR
+  const [isGuideRunning, setIsGuideRunning] = useState(false);
 
   const facilitiesOptions = [
     "Termasuk listrik",
@@ -150,6 +151,12 @@ function SideBar({
     return () => sidebar.removeEventListener("scroll", handleScroll);
   }, [skip, loading, hasMore, fetchDataKost]);
 
+  useEffect(() => {
+    if (sidebarRef.current) {
+      sidebarRef.current.style.overflow = isGuideRunning ? "hidden" : "auto";
+    }
+  }, [isGuideRunning]);
+
   // Calculate pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -210,12 +217,14 @@ function SideBar({
 
   return (
     <motion.div
+      id="sidebar-scroll"
       ref={sidebarRef}
       initial="closed"
       animate={isSidebarOpen ? "open" : "closed"}
       variants={sidebarVariants}
       className="fixed top-[64px] h-[calc(100vh-61px)] w-full max-w-[450px] bg-gray-50 z-40 border-r border-gray-200 overflow-y-auto shadow-lg"
     >
+      <UserGuide isLoading={isLoading} onGuideChange={setIsGuideRunning} />
       <div className="w-full flex justify-end p-3 md:hidden">
         <motion.button
           onClick={toggleSidebar}

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Joyride, { EVENTS, STATUS } from "react-joyride";
+import { motion } from "framer-motion";
 
-function UserGuide({ isLoading }) {
+function UserGuide({ isLoading, onGuideChange }) {
   const initialSteps = [
     {
       target: "#search",
@@ -70,17 +71,120 @@ function UserGuide({ isLoading }) {
 
   const [run, setRun] = useState(false);
   const [steps, setSteps] = useState([]);
+  const [shouldLockScroll, setShouldLockScroll] = useState(false);
 
-  // Start tour jika loading selesai dan belum pernah dilihat
+  const CustomTooltip = ({
+    step,
+    index,
+    size,
+    backProps,
+    closeProps,
+    primaryProps,
+    skipProps,
+    tooltipProps,
+  }) => {
+    return (
+      <motion.div
+        {...tooltipProps}
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="relative bg-white rounded-xl shadow-2xl p-5 max-w-sm text-sm border border-gray-200"
+      >
+        {/* Title & Content */}
+        <h2 className="text-base font-semibold mb-2 text-gray-800">
+          {step.title}
+        </h2>
+        <p className="text-gray-600 mb-4 leading-relaxed">{step.content}</p>
+
+        {/* Progress dots */}
+        <div className="flex justify-center mb-4">
+          {Array.from({ length: size }).map((_, i) => (
+            <div
+              key={i}
+              className={`w-2 h-2 mx-1 rounded-full transition-all duration-300 ${
+                i === index ? "bg-blue-600 scale-110" : "bg-gray-300"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-between items-center gap-2">
+          <button
+            {...skipProps}
+            className="text-blue-600 text-sm hover:underline transition duration-200"
+          >
+            Lewati
+          </button>
+
+          <div className="flex gap-2 ml-auto">
+            {index > 0 && (
+              <button
+                {...backProps}
+                className="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm flex items-center gap-1 hover:bg-gray-300 transition"
+              >
+                Kembali
+              </button>
+            )}
+            <button
+              {...primaryProps}
+              className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1 hover:bg-blue-700 transition"
+            >
+              {index === size - 1 ? <>Selesai</> : <>Selanjutnya</>}
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
   useEffect(() => {
-    const seen = localStorage.getItem("tour_seen");
-    if (!isLoading && seen !== "true") {
+    const unlockScroll = () => {
+      document.body.style.overflow = "auto";
+      document.documentElement.style.overflow = "auto";
+
+      // Jaga-jaga: pastikan sidebar juga bisa scroll
+      const sidebar = document.getElementById("sidebar-scroll");
+      if (sidebar) {
+        sidebar.style.overflowY = "auto";
+      }
+    };
+
+    const lockScroll = () => {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+
+      // Jaga-jaga: sidebar juga dikunci scroll-nya
+      const sidebar = document.getElementById("sidebar-scroll");
+      if (sidebar) {
+        sidebar.style.overflowY = "hidden";
+      }
+    };
+
+    if (shouldLockScroll) {
+      lockScroll();
+    } else {
+      unlockScroll();
+    }
+
+    return () => {
+      unlockScroll();
+    };
+  }, [shouldLockScroll]);
+
+  // Cek dari localStorage
+  useEffect(() => {
+    if (!isLoading && localStorage.getItem("tour_seen") !== "true") {
+      setShouldLockScroll(true);
       setRun(true);
       setSteps(initialSteps);
+      onGuideChange?.(true); // 🔴 Mulai kunci scroll
     }
   }, [isLoading]);
 
-    useEffect(() => {
+  // Cek dari backend
+  useEffect(() => {
     const fetchGuideStatus = async () => {
       try {
         const storedUser = localStorage.getItem("user");
@@ -89,14 +193,18 @@ function UserGuide({ isLoading }) {
 
         if (!id_user || isLoading) return;
 
-        const res = await fetch(`https://ggnt.mapid.co.id/api/users/${id_user}`);
+        const res = await fetch(
+          `https://ggnt.mapid.co.id/api/users/${id_user}`
+        );
         const json = await res.json();
 
         const hasSeenGuide = json?.has_seen_guide;
 
         if (!hasSeenGuide) {
+          setShouldLockScroll(true); // juga kunci scroll di sini
           setRun(true);
           setSteps(initialSteps);
+          onGuideChange?.(true); //  Mulai kunci scroll
         }
       } catch (error) {
         console.error("Gagal memuat status panduan:", error);
@@ -106,15 +214,15 @@ function UserGuide({ isLoading }) {
     fetchGuideStatus();
   }, [isLoading]);
 
-   const handleJoyrideCallback = async (data) => {
+  const handleJoyrideCallback = async (data) => {
     const { status, type } = data;
     const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
 
     if (finishedStatuses.includes(status) || type === EVENTS.TOUR_END) {
       setRun(false);
       setSteps([]);
+      setShouldLockScroll(false);
 
-      // Update status has_seen_guide ke true
       try {
         const storedUser = localStorage.getItem("user");
         const user = JSON.parse(storedUser);
@@ -122,16 +230,22 @@ function UserGuide({ isLoading }) {
 
         if (!id_user) return;
 
-        await fetch(`https://ggnt.mapid.co.id/api/users/${id_user}/guide-status`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ has_seen_guide: true }),
-        });
+        await fetch(
+          `https://ggnt.mapid.co.id/api/users/${id_user}/guide-status`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ has_seen_guide: true }),
+          }
+        );
       } catch (error) {
         console.error("Gagal menyimpan status panduan:", error);
       }
+
+      // Optional reload
+      // window.location.reload();
     }
   };
 
@@ -141,14 +255,23 @@ function UserGuide({ isLoading }) {
     <Joyride
       steps={steps}
       run={run}
+      //   run={true}
+      locale={{
+        last: "Selesai",
+      }}
       continuous
       showSkipButton
       showProgress
       disableOverlayClose
+      scrollToFirstStep={true}
+      scrollOffset={100}
+      tooltipComponent={CustomTooltip}
+      disableScrollParentFix={true}
       callback={handleJoyrideCallback}
       styles={{
         options: {
           zIndex: 1000,
+          transition: "all 1s ease-in-out",
         },
       }}
     />

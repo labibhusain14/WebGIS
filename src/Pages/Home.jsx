@@ -174,7 +174,6 @@ function Home() {
 
   return (
     <div className="body relative h-screen">
-      <UserGuide isLoading={isLoading} /> {/* Close button for mobile */}
       {isLoading && <LoadingAnimation duration={4000} />}
       <Navbar />
       <SideBar
