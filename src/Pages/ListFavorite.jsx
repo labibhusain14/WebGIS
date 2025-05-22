@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, BedDouble, FanIcon, MapPin, Heart } from "lucide-react";
+import Navbar from '../Components/Navbar';
 import {
   FiGrid,
   FiList,
@@ -107,6 +108,14 @@ const FavoriteKosts = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [favoritIds, setFavoritIds] = useState([]);
   const [kosts, setKosts] = useState([]); // full kost data
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [selectedKostId, setSelectedKostId] = useState(null);
+
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 2500);
+  };
 
   const fetchFavoriteKosts = async () => {
     try {
@@ -156,51 +165,85 @@ const FavoriteKosts = () => {
     const isFavorited = favoritIds.includes(kostId);
 
     if (isFavorited) {
-      const confirmed = window.confirm(
-        "Apakah kamu yakin ingin menghapus kost dari favorit?"
-      );
-      if (!confirmed) return;
+      setSelectedKostId(kostId);
+      setShowConfirmModal(true);
+    }
+  };
 
-      try {
-        const response = await fetch(
-          "https://ggnt.mapid.co.id/api/favorites/",
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id_kost: kostId,
-              id_user: userId,
-            }),
-          }
-        );
+  const confirmDislike = async (kostId) => {
+    console.log(kostId)
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return;
+    const parsedUser = JSON.parse(storedUser);
+    const userId = parsedUser?.id_user;
+    if (!userId) return;
 
-        if (!response.ok) {
-          throw new Error("Gagal menghapus favorit");
-        }
+    try {
+      const response = await fetch("https://ggnt.mapid.co.id/api/favorites/", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id_kost: kostId,
+          id_user: userId,
+        }),
+      });
+      if (!response.ok) throw new Error("Gagal menghapus favorit");
 
-        // setFavoritIds((prev) => prev.filter((id) => id !== kostId));
-        // Re-fetch updated kosts
-        await fetchFavoriteKosts();
-      } catch (error) {
-        console.error("Gagal menghapus kost dari favorit:", error);
-        alert("Terjadi kesalahan saat menghapus favorit.");
-      }
+      showToast("🗑️ Kost dihapus dari favorit");
+      await fetchFavoriteKosts();
+    } catch (error) {
+      console.error("Error disliking kost:", error);
+      showToast("❌ Gagal menghapus dari favorit");
+    } finally {
+      setShowConfirmModal(false);
+      setSelectedKostId(null);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-100 py-10">
-      <div className="container mx-auto max-w-7xl px-4">
-        <button
+      <Navbar />
+        {toast && (
+        <div className="fixed bottom-4 animate-toastSlide bg-green-600 text-white px-6 py-3 rounded-md shadow-lg z-50">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium">{toast}</span>
+          </div>
+        </div>
+      )}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-4 w-[300px] text-center shadow-lg">
+            <p className="text-sm text-gray-700 mb-4">
+              Yakin ingin menghapus dari favorit?
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                className="bg-gray-300 px-4 py-1 rounded hover:bg-gray-400"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                Batal
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+                onClick={() => confirmDislike(selectedKostId)}
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="container mx-auto max-w-7xl px-4 mt-10">
+        {/* <button
           onClick={goBack}
           className="flex items-center text-gray-600 hover:text-blue-600 transition duration-200 mb-6 bg-white px-4 py-2 rounded-lg shadow-sm"
         >
           <ArrowLeft size={18} className="mr-2" />
           Back
-        </button>
-        <div className="bg-white rounded-lg overflow-hidden shadow-lg px-6 py-8">
+        </button> */}
+        <div className="bg-white rounded-lg overflow-hidden shadow-lg px-6 py-6">
           <div className="flex flex-col gap-4 mb-6">
             <h2 className="text-3xl font-bold text-gray-800">Kost Favoritmu</h2>
 
@@ -337,7 +380,7 @@ const FavoriteKosts = () => {
                     }`}
                   >
                     <img
-                      src={kostImage}
+                      src={kost.gambar?.[0] || kostImage}
                       alt={kost.nama_kost}
                       className={`object-cover w-full ${
                         viewMode === "list" ? "h-full max-h-48" : "h-48"

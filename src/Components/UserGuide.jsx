@@ -80,14 +80,58 @@ function UserGuide({ isLoading }) {
     }
   }, [isLoading]);
 
-  const handleJoyrideCallback = (data) => {
+    useEffect(() => {
+    const fetchGuideStatus = async () => {
+      try {
+        const storedUser = localStorage.getItem("user");
+        const user = JSON.parse(storedUser);
+        const id_user = user?.id_user;
+
+        if (!id_user || isLoading) return;
+
+        const res = await fetch(`https://ggnt.mapid.co.id/api/users/${id_user}`);
+        const json = await res.json();
+
+        const hasSeenGuide = json?.has_seen_guide;
+
+        if (!hasSeenGuide) {
+          setRun(true);
+          setSteps(initialSteps);
+        }
+      } catch (error) {
+        console.error("Gagal memuat status panduan:", error);
+      }
+    };
+
+    fetchGuideStatus();
+  }, [isLoading]);
+
+   const handleJoyrideCallback = async (data) => {
     const { status, type } = data;
     const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
 
     if (finishedStatuses.includes(status) || type === EVENTS.TOUR_END) {
       setRun(false);
       setSteps([]);
-      localStorage.setItem("tour_seen", "true"); // Simpan status supaya beacon tidak muncul lagi
+
+      // Update status has_seen_guide ke true
+      try {
+        const storedUser = localStorage.getItem("user");
+        const user = JSON.parse(storedUser);
+        const id_user = user?.id_user;
+
+        if (!id_user) return;
+
+        await fetch(`https://ggnt.mapid.co.id/api/users/${id_user}/guide-status`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ has_seen_guide: true }),
+        });
+      } catch (error) {
+        console.error("Gagal menyimpan status panduan:", error);
+      }
     }
   };
 
