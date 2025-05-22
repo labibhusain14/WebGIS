@@ -8,7 +8,7 @@ import {
   FiHome,
   FiHelpCircle,
   FiInfo,
-  FiBarChart, ,
+  FiBarChart,
   FiHeart,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";

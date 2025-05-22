@@ -173,15 +173,15 @@ function UserGuide({ isLoading, onGuideChange }) {
     };
   }, [shouldLockScroll]);
 
-  // Cek dari localStorage
-  useEffect(() => {
-    if (!isLoading && localStorage.getItem("tour_seen") !== "true") {
-      setShouldLockScroll(true);
-      setRun(true);
-      setSteps(initialSteps);
-      onGuideChange?.(true); // 🔴 Mulai kunci scroll
-    }
-  }, [isLoading]);
+  // // Cek dari localStorage
+  // useEffect(() => {
+  //   if (!isLoading && localStorage.getItem("tour_seen") !== "true") {
+  //     setShouldLockScroll(true);
+  //     setRun(true);
+  //     setSteps(initialSteps);
+  //     onGuideChange?.(true); // 🔴 Mulai kunci scroll
+  //   }
+  // }, [isLoading]);
 
   // Cek dari backend
   useEffect(() => {
@@ -199,6 +199,7 @@ function UserGuide({ isLoading, onGuideChange }) {
         const json = await res.json();
 
         const hasSeenGuide = json?.has_seen_guide;
+        // localStorage.setItem("tour_seen", hasSeenGuide);
 
         if (!hasSeenGuide) {
           setShouldLockScroll(true); // juga kunci scroll di sini

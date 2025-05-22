@@ -115,12 +115,13 @@ class KostDataService {
     const { searchTerm, priceRange, selectedFacilities, selectedType, sortOrder } = filters;
 
     const filtered = list.filter((kost) => {
+      const nameSearch = !searchTerm || kost.nama_kost.toLowerCase().includes(searchTerm.toLowerCase());
       const matchSearch = !searchTerm || kost.alamat.toLowerCase().includes(searchTerm.toLowerCase());
       const matchPrice = (!priceRange.min || kost.harga_sewa >= priceRange.min) && (!priceRange.max || kost.harga_sewa <= priceRange.max);
       const matchFacilities = selectedFacilities.length === 0 || selectedFacilities.every((fac) => kost.fasilitas.some((f) => f.nama_fasilitas === fac));
       const matchType = selectedType.length === 0 || selectedType.includes(kost.tipe_kost);
 
-      return matchSearch && matchPrice && matchFacilities && matchType;
+      return nameSearch && matchSearch && matchPrice && matchFacilities && matchType;
     });
 
     return filtered.sort((a, b) => (sortOrder === 'asc' ? a.harga_sewa - b.harga_sewa : b.harga_sewa - a.harga_sewa));

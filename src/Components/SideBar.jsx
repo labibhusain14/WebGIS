@@ -92,17 +92,22 @@ function SideBar({
 
   const applyFiltersAndSearch = (list) => {
     const filtered = list.filter((kost) => {
-      const matchSearch = kost.alamat
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      // Fixed search logic - search by both name and address
+      const searchLower = searchTerm.toLowerCase().trim();
+      const matchSearch = searchLower === "" || 
+        (kost.nama_kost && kost.nama_kost.toLowerCase().includes(searchLower)) ||
+        (kost.alamat && kost.alamat.toLowerCase().includes(searchLower));
+      
       const matchPrice =
         (!priceRange.min || kost.harga_sewa >= priceRange.min) &&
         (!priceRange.max || kost.harga_sewa <= priceRange.max);
+      
       const matchFacilities =
         selectedFacilities.length === 0 ||
         selectedFacilities.every((fac) =>
           kost.fasilitas.some((f) => f.nama_fasilitas === fac)
         );
+      
       const matchType =
         selectedType.length === 0 || selectedType.includes(kost.tipe_kost);
 
@@ -246,7 +251,7 @@ function SideBar({
           <input
             id="search"
             type="text"
-            placeholder="Search location..."
+            placeholder="Search by name or location..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full py-3 px-4 pl-10 rounded-lg bg-white border border-gray-300 shadow-sm outline-none text-gray-700 focus:ring-2 focus:ring-blue-500 mt-2 focus:border-transparent transition-all"
@@ -506,7 +511,8 @@ function SideBar({
       <AnimatePresence>
         {(selectedFacilities.length > 0 ||
           priceRange.min > 0 ||
-          priceRange.max > 0) && (
+          priceRange.max > 0 ||
+          searchTerm.trim() !== "") && (
           <motion.div
             className="w-[90%] mx-auto bg-white rounded-lg shadow-sm p-3 mb-4"
             initial={{ opacity: 0, height: 0 }}
@@ -515,6 +521,24 @@ function SideBar({
             transition={{ duration: 0.3 }}
           >
             <div className="flex flex-wrap gap-2">
+              {searchTerm.trim() !== "" && (
+                <motion.div
+                  className="bg-green-50 text-green-700 text-xs py-1 px-2 rounded-full flex items-center"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  layout
+                >
+                  <span>Search: "{searchTerm}"</span>
+                  <motion.button
+                    onClick={() => setSearchTerm("")}
+                    className="ml-1 text-green-500 hover:text-green-700"
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    ✕
+                  </motion.button>
+                </motion.div>
+              )}
               {priceRange.min > 0 && (
                 <motion.div
                   className="bg-blue-50 text-blue-700 text-xs py-1 px-2 rounded-full flex items-center"
@@ -577,11 +601,13 @@ function SideBar({
 
               {(selectedFacilities.length > 0 ||
                 priceRange.min > 0 ||
-                priceRange.max > 0) && (
+                priceRange.max > 0 ||
+                searchTerm.trim() !== "") && (
                 <motion.button
                   onClick={() => {
                     setSelectedFacilities([]);
                     setPriceRange({ min: 0, max: 0 });
+                    setSearchTerm("");
                   }}
                   className="text-xs text-red-600 hover:text-red-800 underline ml-auto"
                   whileHover={{ scale: 1.05 }}
@@ -604,6 +630,11 @@ function SideBar({
         <p className="text-sm text-gray-600">
           {filteredKost.length}{" "}
           {filteredKost.length === 1 ? "property" : "properties"} found
+          {searchTerm.trim() && (
+            <span className="text-blue-600 font-medium">
+              {" "}for "{searchTerm}"
+            </span>
+          )}
         </p>
       </motion.div>
       {/* Card listing */}
@@ -712,6 +743,11 @@ function SideBar({
             <p className="text-sm text-gray-500">
               Try adjusting your search or filter criteria
             </p>
+            {searchTerm.trim() && (
+              <p className="text-sm text-gray-400 mt-1">
+                No results for "{searchTerm}"
+              </p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
