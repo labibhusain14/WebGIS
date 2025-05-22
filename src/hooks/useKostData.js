@@ -40,7 +40,7 @@ export default function useKostData(addMarkersToMap, navigate) {
       
       const data = await KostDataService.fetchKostData(
         reset ? 0 : skip,
-        800,
+        1473,
         useCache
       );
       
